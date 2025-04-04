@@ -1,0 +1,41 @@
+package ru.enjy.fit_balance.model.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "workout")
+public class Workout {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "title", nullable = false)
+    private String title;
+
+    @Lob
+    @Column(name = "description")
+    private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserAccount user;
+
+    @Column(name = "pattern")
+    private Boolean pattern;
+
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created;
+
+    @OneToMany(mappedBy = "workout", orphanRemoval = true)
+    private Set<Superset> supersets = new LinkedHashSet<>();
+
+}
