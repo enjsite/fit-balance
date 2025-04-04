@@ -60,6 +60,13 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
+    public UserAccountDto create(UserAccount userAccount) {
+        userAccount.setCreated(LocalDateTime.now());
+        UserAccount resultUserAccount = userAccountRepository.save(userAccount);
+        return userAccountMapper.toUserAccountDto(resultUserAccount);
+    }
+
+    @Override
     public UserAccountDto patch(Long id, JsonNode patchNode) throws IOException {
         UserAccount userAccount = userAccountRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
