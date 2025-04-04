@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="1743772380383-1" author="enjyw (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_details"
+                                 constraintName="FK_USER_DETAILS_ON_USER_ACCOUNT" referencedColumnNames="id"
+                                 referencedTableName="user_account"/>
+    </changeSet>
+    <changeSet id="1743772380383-2" author="enjyw (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="workout" constraintName="FK_WORKOUT_ON_USER_ACCOUNT"
+                                 referencedColumnNames="id" referencedTableName="user_account"/>
+    </changeSet>
+    <changeSet id="1743772380383-3" author="enjyw (generated)">
+        <dropForeignKeyConstraint baseTableName="user_details" constraintName="fk_user_details_on_user"/>
+    </changeSet>
+    <changeSet id="1743772380383-4" author="enjyw (generated)">
+        <dropForeignKeyConstraint baseTableName="workout" constraintName="fk_workout_on_user"/>
+    </changeSet>
+</databaseChangeLog>

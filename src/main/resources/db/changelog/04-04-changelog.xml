@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="1743771870586-1" author="enjyw (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="exercise" constraintName="FK_EXERCISE_ON_USER_ACCOUNT"
+                                 referencedColumnNames="id" referencedTableName="user_account"/>
+    </changeSet>
+    <changeSet id="1743771870586-2" author="enjyw (generated)">
+        <dropForeignKeyConstraint baseTableName="exercise" constraintName="fk_exercise_on_user"/>
+    </changeSet>
+</databaseChangeLog>
