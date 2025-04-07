@@ -1,6 +1,7 @@
 package ru.enjy.fit_balance.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -21,10 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@RequiredArgsConstructor
+
 public class MultiSessionTelegramBot extends TelegramLongPollingBot {
-    private String name;
-    private String token;
+    private String name;// = "FitBalanceFromENJYBot";
+    private String token;// = "8037976874:AAFTsd7DT5Urcy3bv0B52OwY3wvIiUs-iHQ";
 
     private ThreadLocal<Update> updateEvent = new ThreadLocal<>();
     private HashMap<Long, Integer> gloryStorage = new HashMap<>();

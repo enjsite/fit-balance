@@ -27,10 +27,9 @@ public class TelegramBotService extends MultiSessionTelegramBot {
 
     private final UserAccountServiceImpl userAccountService;
 
-    public TelegramBotService(UserAccountServiceImpl userAccountService) {
-        super(NAME, TOKEN);
-        this.userAccountService = userAccountService;
-    }
+//    public TelegramBotService() {
+//        super(NAME, TOKEN);
+//    }
 
     //private final OpenAiChatModel openAiChatModel;
 
@@ -42,9 +41,10 @@ public class TelegramBotService extends MultiSessionTelegramBot {
 //        this.openAiChatModel = openAiChatModel;
 //    }
 
-//    public TelegramBotService(UserAccountService userAccountService) {
-//        super(NAME, TOKEN);
-//    }
+    public TelegramBotService(UserAccountServiceImpl userAccountService) {
+        super(NAME, TOKEN);
+        this.userAccountService = userAccountService;
+    }
 
     @Override
     public void onUpdateEventReceived(Update updateEvent) {

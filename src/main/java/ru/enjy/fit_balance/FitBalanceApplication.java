@@ -27,6 +27,7 @@ public class FitBalanceApplication {
 		var appContext = SpringApplication.run(FitBalanceApplication.class, args);
 		TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 		telegramBotsApi.registerBot(new TelegramBotService(appContext.getBean("userAccountServiceImpl", UserAccountServiceImpl.class)));
+
 	}
 
 	/*@Bean
