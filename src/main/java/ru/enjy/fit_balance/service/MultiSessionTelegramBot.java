@@ -24,8 +24,8 @@ import java.util.Map;
 
 
 public class MultiSessionTelegramBot extends TelegramLongPollingBot {
-    private String name;// = "FitBalanceFromENJYBot";
-    private String token;// = "8037976874:AAFTsd7DT5Urcy3bv0B52OwY3wvIiUs-iHQ";
+    private String name;
+    private String token;
 
     private ThreadLocal<Update> updateEvent = new ThreadLocal<>();
     private HashMap<Long, Integer> gloryStorage = new HashMap<>();

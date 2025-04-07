@@ -85,17 +85,17 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.telegram/telegrambots -->
-		<dependency>
-			<groupId>org.telegram</groupId>
-			<artifactId>telegrambots</artifactId>
-			<version>6.3.0</version>
-		</dependency>
-
 <!--		<dependency>-->
 <!--			<groupId>org.telegram</groupId>-->
-<!--			<artifactId>telegrambots-spring-boot-starter</artifactId>-->
+<!--			<artifactId>telegrambots</artifactId>-->
 <!--			<version>6.3.0</version>-->
 <!--		</dependency>-->
+
+		<dependency>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots-spring-boot-starter</artifactId>
+			<version>6.3.0</version>
+		</dependency>
 	</dependencies>
 <!--	<dependencyManagement>-->
 <!--		<dependencies>-->

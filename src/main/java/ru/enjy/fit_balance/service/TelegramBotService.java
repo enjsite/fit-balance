@@ -1,12 +1,15 @@
 package ru.enjy.fit_balance.service;
 
+import jakarta.annotation.PostConstruct;
 //import jakarta.enterprise.context.SessionScoped;
 //import org.springframework.ai.chat.messages.*;
 //import org.springframework.ai.openai.OpenAiChatModel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.entity.UserAccount;
 import ru.enjy.fit_balance.model.mapper.ExerciseMapper;
@@ -19,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-//@RequiredArgsConstructor
 public class TelegramBotService extends MultiSessionTelegramBot {
 
     public static final String NAME = "FitBalanceFromENJYBot";
@@ -27,9 +29,18 @@ public class TelegramBotService extends MultiSessionTelegramBot {
 
     private final UserAccountServiceImpl userAccountService;
 
-//    public TelegramBotService() {
-//        super(NAME, TOKEN);
-//    }
+    private final TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+
+    @PostConstruct
+    public void init() {
+        try {
+            telegramBotsApi.registerBot(this);
+            System.out.println("Telegram bot has been registered!");
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     //private final OpenAiChatModel openAiChatModel;
 
@@ -41,10 +52,14 @@ public class TelegramBotService extends MultiSessionTelegramBot {
 //        this.openAiChatModel = openAiChatModel;
 //    }
 
-    public TelegramBotService(UserAccountServiceImpl userAccountService) {
+
+    @Autowired
+    public TelegramBotService(UserAccountServiceImpl userAccountService) throws TelegramApiException {
         super(NAME, TOKEN);
         this.userAccountService = userAccountService;
     }
+
+
 
     @Override
     public void onUpdateEventReceived(Update updateEvent) {
