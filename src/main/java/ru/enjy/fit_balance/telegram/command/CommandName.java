@@ -4,6 +4,7 @@ public enum CommandName {
 
     START("/start"),
     REGISTRATION("/registration"),
+    WORKOUT("/workout"),
     HELP("/help");
 
     private final String commandName;

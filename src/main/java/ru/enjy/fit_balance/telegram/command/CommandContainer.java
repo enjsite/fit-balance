@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Component;
 import ru.enjy.fit_balance.FitBalanceApplication;
 import ru.enjy.fit_balance.service.UserAccountService;
+import ru.enjy.fit_balance.service.WorkoutService;
 import ru.enjy.fit_balance.service.impl.UserAccountServiceImpl;
 import ru.enjy.fit_balance.telegram.TelegramBotService;
 
@@ -19,11 +20,14 @@ public class CommandContainer {
 
     private final Command unknownCommand;
 
-    public CommandContainer(TelegramBotService telegramBotService, UserAccountService userAccountService) {
+    public CommandContainer(TelegramBotService telegramBotService,
+                            UserAccountService userAccountService,
+                            WorkoutService workoutService) {
 
         commandMap = new HashMap<>();
         commandMap.put(START.getCommandName(), new StartCommand(telegramBotService));
         commandMap.put(REGISTRATION.getCommandName(), new RegistrationCommand(telegramBotService, userAccountService));
+        commandMap.put(WORKOUT.getCommandName(), new WorkoutCommand(telegramBotService, workoutService, userAccountService));
         commandMap.put(HELP.getCommandName(), new HelpCommand(telegramBotService));
 
         unknownCommand = new HelpCommand(telegramBotService);

@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.enjy.fit_balance.service.UserAccountService;
+import ru.enjy.fit_balance.service.WorkoutService;
 import ru.enjy.fit_balance.telegram.bot.MultiSessionTelegramBot;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
 
@@ -32,9 +33,10 @@ public class TelegramBotService extends MultiSessionTelegramBot {
     }
 
     @Autowired
-    public TelegramBotService(UserAccountService userAccountService) throws TelegramApiException {
+    public TelegramBotService(UserAccountService userAccountService,
+                              WorkoutService workoutService) throws TelegramApiException {
         super(NAME, TOKEN);
-        this.commandContainer = new CommandContainer(this, userAccountService);
+        this.commandContainer = new CommandContainer(this, userAccountService, workoutService);
     }
 
 

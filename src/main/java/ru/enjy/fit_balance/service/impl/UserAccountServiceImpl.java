@@ -136,4 +136,5 @@ public class UserAccountServiceImpl implements UserAccountService {
     public void deleteMany(List<Long> ids) {
         userAccountRepository.deleteAllById(ids);
     }
+
 }
