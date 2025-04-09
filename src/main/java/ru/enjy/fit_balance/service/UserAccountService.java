@@ -20,6 +20,8 @@ public interface UserAccountService {
 
     UserAccountDto create(UserAccount userAccount);
 
+    UserAccountDto create(String chatId);
+
     UserAccountDto patch(Long id, JsonNode patchNode) throws IOException;
 
     List<Long> patchMany(List<Long> ids, JsonNode patchNode) throws IOException;

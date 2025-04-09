@@ -1,7 +1,5 @@
-package ru.enjy.fit_balance.service;
+package ru.enjy.fit_balance.telegram.bot;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -143,7 +141,7 @@ public class MultiSessionTelegramBot extends TelegramLongPollingBot {
 
     public SendPhoto createPhotoMessage(String name) {
         try {
-            var is = ClassLoader.getSystemResourceAsStream("images/" + name + ".jpg");
+            var is = ClassLoader.getSystemResourceAsStream("img/" + name);
             return createPhotoMessage(is);
         } catch (Exception e) {
             throw new RuntimeException("Can't create photo message!");

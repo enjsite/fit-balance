@@ -3,6 +3,9 @@ package ru.enjy.fit_balance.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,11 +18,13 @@ import ru.enjy.fit_balance.repository.UserAccountRepository;
 import ru.enjy.fit_balance.service.UserAccountService;
 
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
@@ -62,7 +67,30 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public UserAccountDto create(UserAccount userAccount) {
         userAccount.setCreated(LocalDateTime.now());
-        UserAccount resultUserAccount = userAccountRepository.save(userAccount);
+        UserAccount resultUserAccount;
+        try {
+            resultUserAccount = userAccountRepository.save(userAccount);
+        } catch (DataIntegrityViolationException e) {
+            System.out.println("User already exists.");
+            resultUserAccount = userAccount;
+        }
+
+        return userAccountMapper.toUserAccountDto(resultUserAccount);
+    }
+
+    @Override
+    public UserAccountDto create(String chatId) {
+        UserAccount userAccount = new UserAccount();
+        userAccount.setCreated(LocalDateTime.now());
+        userAccount.setChat_id(chatId);
+        UserAccount resultUserAccount;
+        try {
+            resultUserAccount = userAccountRepository.save(userAccount);
+        } catch (DataIntegrityViolationException e) {
+            System.out.println("User already exists. " + e.getLocalizedMessage());
+            resultUserAccount = userAccount;
+        }
+
         return userAccountMapper.toUserAccountDto(resultUserAccount);
     }
 
