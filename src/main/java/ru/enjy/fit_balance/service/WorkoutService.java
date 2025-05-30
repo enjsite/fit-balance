@@ -3,6 +3,7 @@ package ru.enjy.fit_balance.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 
 import java.io.IOException;
@@ -16,6 +17,8 @@ public interface WorkoutService {
     List<WorkoutDto> getMany(List<Long> ids);
 
     WorkoutDto create(WorkoutDto dto);
+
+    WorkoutDto create(UserAccountDto userAccountDto);
 
     WorkoutDto patch(Long id, JsonNode patchNode) throws IOException;
 

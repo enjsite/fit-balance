@@ -17,7 +17,7 @@ public class UserAccount {
     private Long id;
 
     @Column(name = "chat_id", nullable = false, unique = true)
-    private String chat_id;
+    private String chatId;
 
     @Column(name = "username")
     private String username;

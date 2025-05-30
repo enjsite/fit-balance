@@ -20,6 +20,8 @@ public interface UserAccountService {
 
     UserAccountDto create(UserAccount userAccount);
 
+    UserAccountDto create(String chatId);
+
     UserAccountDto patch(Long id, JsonNode patchNode) throws IOException;
 
     List<Long> patchMany(List<Long> ids, JsonNode patchNode) throws IOException;
@@ -27,4 +29,6 @@ public interface UserAccountService {
     UserAccountDto delete(Long id);
 
     void deleteMany(List<Long> ids);
+
+    UserAccountDto findFirstByChatId(String chatId);
 }
