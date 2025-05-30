@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserAccountDto {
     Long id;
-    String chat_id;
+    String chatId;
     String username;
     LocalDateTime created;
 }

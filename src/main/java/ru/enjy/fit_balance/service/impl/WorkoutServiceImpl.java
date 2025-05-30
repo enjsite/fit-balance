@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.Workout;
+import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
 import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.repository.WorkoutRepository;
 import ru.enjy.fit_balance.service.WorkoutService;
@@ -32,6 +34,8 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final WorkoutRepository workoutRepository;
 
     private final ObjectMapper objectMapper;
+
+    private final UserAccountMapper userAccountMapper;
 
     @Override
     public Page<WorkoutDto> getAll(Pageable pageable) {
@@ -63,6 +67,13 @@ public class WorkoutServiceImpl implements WorkoutService {
         workout.setCreated(LocalDateTime.now());
         Workout resultWorkout = workoutRepository.save(workout);
         return workoutMapper.toWorkoutDto(resultWorkout);
+    }
+
+    @Override
+    public WorkoutDto create(UserAccountDto userAccountDto) {
+        Workout workout = new Workout();
+        workout.setUser(userAccountMapper.toEntity(userAccountDto));
+        return create(workoutMapper.toWorkoutDto(workout));
     }
 
     @Override

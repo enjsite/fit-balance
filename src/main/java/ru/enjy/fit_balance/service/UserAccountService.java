@@ -29,4 +29,6 @@ public interface UserAccountService {
     UserAccountDto delete(Long id);
 
     void deleteMany(List<Long> ids);
+
+    UserAccountDto findFirstByChatId(String chatId);
 }

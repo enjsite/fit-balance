@@ -82,7 +82,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     public UserAccountDto create(String chatId) {
         UserAccount userAccount = new UserAccount();
         userAccount.setCreated(LocalDateTime.now());
-        userAccount.setChat_id(chatId);
+        userAccount.setChatId(chatId);
         UserAccount resultUserAccount;
         try {
             resultUserAccount = userAccountRepository.save(userAccount);
@@ -135,6 +135,13 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public void deleteMany(List<Long> ids) {
         userAccountRepository.deleteAllById(ids);
+    }
+
+    @Override
+    public UserAccountDto findFirstByChatId(String chatId) {
+        Optional<UserAccount> userAccountOptional = userAccountRepository.findFirstByChatIdIgnoreCase(chatId);
+        return userAccountMapper.toUserAccountDto(userAccountOptional.orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with chatId `%s` not found".formatted(chatId))));
     }
 
 }
