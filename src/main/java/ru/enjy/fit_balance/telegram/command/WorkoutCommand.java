@@ -3,8 +3,6 @@ package ru.enjy.fit_balance.telegram.command;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
-import ru.enjy.fit_balance.model.dto.WorkoutDto;
-import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
 import ru.enjy.fit_balance.telegram.TelegramBotService;
@@ -24,7 +22,6 @@ public class WorkoutCommand implements Command {
 
         UserAccountDto userAccountDto = userAccountService.findFirstByChatId(telegramBotService.getCurrentChatId().toString());
         workoutService.create(userAccountDto);
-        //workoutService.create(userAccountDto);
 
         telegramBotService.sendTextMessageAsync("Выберите действие: ",
                 Map.of("Начать суперсет", "/help",
