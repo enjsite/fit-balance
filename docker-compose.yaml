@@ -37,6 +37,38 @@ services:
       start_period: 10s
       retries: 5
     entrypoint: /bin/sh -c "chmod 600 /pgadmin4/pgpass; /entrypoint.sh;"
+  app-service:
+    image: app-service:latest
+    build:
+      context: app-service
+      args:
+        DOCKER_BUILDKIT: 1
+    restart: "no"
+    ports:
+      - "8090:8090"
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/fitbalance
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_USER=root
+      - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
+  statistic-service:
+    image: statistic-service:latest
+    build:
+      context: statistic-service
+      args:
+        DOCKER_BUILDKIT: 2
+    restart: "no"
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/fitbalance
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_USER=root
+      - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
 volumes:
   postgres_data:
   pgadmin_data:

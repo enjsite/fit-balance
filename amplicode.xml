@@ -5,9 +5,14 @@
   </component>
   <component name="AmplicodePersistenceUnitSettings">
     <persistence-units>
-      <persistence-unit name="Default" defaultIncludeChangeLogFile="src/main/resources/db/changelog/db.changelog-master.xml">
+      <persistence-unit moduleName="app-service" name="Default">
         <packages>
           <package value="ru.enjy.fit_balance" />
+        </packages>
+      </persistence-unit>
+      <persistence-unit moduleName="statistic-service" name="Default">
+        <packages>
+          <package value="ru.enjy" />
         </packages>
       </persistence-unit>
     </persistence-units>
