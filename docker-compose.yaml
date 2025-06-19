@@ -69,6 +69,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_DATASOURCE_USER=root
       - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - APP_SERVICE_URL=http://app-service:8090
 volumes:
   postgres_data:
   pgadmin_data:
