@@ -44,6 +44,11 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
+    public Long getAllCount() {
+        return (long) workoutRepository.findAll().size();
+    }
+
+    @Override
     public WorkoutDto getOne(Long id) {
         Optional<Workout> workoutOptional = workoutRepository.findById(id);
         return workoutMapper.toWorkoutDto(workoutOptional.orElseThrow(() ->

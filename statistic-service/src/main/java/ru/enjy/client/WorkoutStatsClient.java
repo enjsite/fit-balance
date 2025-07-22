@@ -1,8 +1,7 @@
-package ru.enjy.workout;
+package ru.enjy.client;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import ru.enjy.client.BaseClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +21,10 @@ public class WorkoutStatsClient extends BaseClient {
 
     public ResponseEntity<Object> getWorkouts() {
         return get("");
+    }
+
+    public ResponseEntity<Object> getWorkoutsCount() {
+        return get("/count");
     }
 
 }

@@ -40,6 +40,11 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
+    public Long getAllCount() {
+        return (long) userAccountRepository.findAll().size();
+    }
+
+    @Override
     public UserAccountDto getOne(Long id) {
         Optional<UserAccount> userAccountOptional = userAccountRepository.findById(id);
         return userAccountMapper.toUserAccountDto(userAccountOptional.orElseThrow(() ->

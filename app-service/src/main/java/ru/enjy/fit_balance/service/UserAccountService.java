@@ -12,6 +12,8 @@ import java.util.List;
 public interface UserAccountService {
     Page<UserAccountDto> getAll(Pageable pageable);
 
+    Long getAllCount();
+
     UserAccountDto getOne(Long id);
 
     List<UserAccountDto> getMany(List<Long> ids);

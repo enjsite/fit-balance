@@ -12,6 +12,8 @@ import java.util.List;
 public interface WorkoutService {
     Page<WorkoutDto> getAll(Pageable pageable);
 
+    Long getAllCount();
+
     WorkoutDto getOne(Long id);
 
     List<WorkoutDto> getMany(List<Long> ids);

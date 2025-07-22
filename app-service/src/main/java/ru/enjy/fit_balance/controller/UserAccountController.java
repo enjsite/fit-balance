@@ -25,6 +25,11 @@ public class UserAccountController {
         return new PagedModel<>(userAccountDtos);
     }
 
+    @GetMapping("/count")
+    public Long getAllCount() {
+        return userAccountService.getAllCount();
+    }
+
     @GetMapping("/{id}")
     public UserAccountDto getOne(@PathVariable Long id) {
         return userAccountService.getOne(id);

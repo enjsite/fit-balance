@@ -25,6 +25,11 @@ public class WorkoutController {
         return new PagedModel<>(workoutDtos);
     }
 
+    @GetMapping("/count")
+    public Long getAllCount() {
+        return workoutService.getAllCount();
+    }
+
     @GetMapping("/{id}")
     public WorkoutDto getOne(@PathVariable Long id) {
         return workoutService.getOne(id);
