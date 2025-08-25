@@ -26,10 +26,6 @@ public class Category {
     @Column(name = "description")
     private String description;
 
-//    @ManyToMany
-//    @JoinTable(name = "category_exercises",
-//            joinColumns = @JoinColumn(name = "category_id"),
-//            inverseJoinColumns = @JoinColumn(name = "exercise_id"))
     @ManyToMany(mappedBy = "categories")
     private Set<Exercise> exercises = new LinkedHashSet<>();
 

@@ -15,8 +15,8 @@ import ru.enjy.fit_balance.telegram.command.CommandContainer;
 @Service
 public class TelegramBotService extends MultiSessionTelegramBot {
 
-    public static final String NAME = "FitBalanceFromENJYBot";
-    public static final String TOKEN = "8037976874:AAFTsd7DT5Urcy3bv0B52OwY3wvIiUs-iHQ";
+    public static final String NAME = "FitBalanceFromENJYTestBot";
+    public static final String TOKEN = "8150171260:AAFAmLVkw-l7otHmxwWRpbw4ecq-vMHVEac";
 
     private final TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 
