@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="1756726437748-1" author="enjyw (generated)">
+        <addColumn tableName="workout">
+            <column name="active" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1756727970355-1" author="enjyw (generated)">
+        <addColumn tableName="set">
+            <column name="active" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1756727970355-2" author="enjyw (generated)">
+        <addColumn tableName="superset">
+            <column name="active" type="BOOLEAN"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

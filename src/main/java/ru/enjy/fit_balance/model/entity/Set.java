@@ -34,6 +34,9 @@ public class Set {
     @Column(name = "time")
     private Integer time;
 
+    @Column(name = "active")
+    private Boolean active;
+
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
@@ -41,19 +44,19 @@ public class Set {
     @JoinColumn(name = "superset_id")
     private Superset superset;
 
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        Set set = (Set) o;
-        return getId() != null && Objects.equals(getId(), set.getId());
-    }
-
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
+//    @Override
+//    public final boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null) return false;
+//        Class<?> oEffectiveClass = o instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+//        Class<?> thisEffectiveClass = this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+//        if (thisEffectiveClass != oEffectiveClass) return false;
+//        Set set = (Set) o;
+//        return getId() != null && Objects.equals(getId(), set.getId());
+//    }
+//
+//    @Override
+//    public final int hashCode() {
+//        return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+//    }
 }

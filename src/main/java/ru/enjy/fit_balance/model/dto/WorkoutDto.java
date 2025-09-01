@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Value;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -18,5 +19,5 @@ public class WorkoutDto {
     UserAccountDto user;
     Boolean pattern;
     LocalDateTime created;
-    Set<SupersetDto> supersets;
+    List<SupersetDto> supersets;
 }

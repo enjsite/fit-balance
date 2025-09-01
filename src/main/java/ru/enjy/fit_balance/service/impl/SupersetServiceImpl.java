@@ -65,7 +65,7 @@ public class SupersetServiceImpl implements SupersetService {
     @Override
     public SupersetDto create(SupersetDto dto) {
         Superset superset = supersetMapper.toEntity(dto);
-        Workout workout = workoutRepository.getReferenceById(dto.getWorkout_id());
+        Workout workout = workoutRepository.getReferenceById(dto.getWorkoutId());
         superset.setWorkout(workout);
         Superset resultSuperset = supersetRepository.save(superset);
         return supersetMapper.toSupersetDto(resultSuperset);
