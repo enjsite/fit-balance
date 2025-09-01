@@ -57,6 +57,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_DATASOURCE_USER=root
       - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - TELEGRAM_BOT_TOKEN=8150171260:AAFAmLVkw-l7otHmxwWRpbw4ecq-vMHVEac
     networks:
       - dev
 volumes:

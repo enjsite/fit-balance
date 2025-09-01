@@ -1,7 +1,8 @@
 FROM maven:3.9.8-amazoncorretto-21 AS build
 WORKDIR /opt/app
 COPY mvnw pom.xml ./
-COPY ./src ./src
+#COPY ./src ./src
+COPY src /opt/app/src
 RUN mvn clean install -DskipTests
 
 FROM amazoncorretto:21-alpine-jdk
@@ -10,6 +11,7 @@ WORKDIR /opt/app
 #COPY target/*.jar app.jar
 COPY --from=build /opt/app/target/*.jar /opt/app/*.jar
 #COPY --from=build /target/*.jar *.jar
+COPY src/main/resources/img/ /opt/app/img/
 
 EXPOSE 8080
 

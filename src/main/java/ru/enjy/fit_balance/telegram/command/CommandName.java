@@ -5,15 +5,25 @@ public enum CommandName {
     START("/start"),
     REGISTRATION("/registration"),
     WORKOUT("/workout"),
+    SUPERSET("/superset"),
     HELP("/help");
 
-    private final String commandName;
+    private final String command;
 
-    CommandName(String commandName) {
-        this.commandName = commandName;
+    CommandName(String command) {
+        this.command = command;
     }
 
-    public String getCommandName() {
-        return commandName;
+    public String getCommand() {
+        return command;
+    }
+
+    public static CommandName getByCommand(String command) {
+        for (CommandName commandName : values()) {
+            if (commandName.getCommand().equals(command)) {
+                return commandName;
+            }
+        }
+        return null;
     }
 }

@@ -5,34 +5,28 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
+import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import java.util.List;
 
+import static ru.enjy.fit_balance.telegram.command.CommandName.SUPERSET;
 import static ru.enjy.fit_balance.telegram.command.CommandName.WORKOUT;
 
 @Component
-public class WorkoutCommand implements Command {
+public class SupersetCommand implements Command {
 
-    private final CommandName command = WORKOUT;
-    private final WorkoutService workoutService;
-    private final UserAccountService userAccountService;
+    private final CommandName command = SUPERSET;
 
-    public WorkoutCommand(CommandContainer commandContainer,
-                          WorkoutService workoutService,
-                          UserAccountService userAccountService) {
+    public SupersetCommand(CommandContainer commandContainer) {
         commandContainer.setCommandMap(this);
-        this.workoutService = workoutService;
-        this.userAccountService = userAccountService;
     }
 
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId) {
 
-        UserAccountDto userAccountDto = userAccountService.findFirstByChatId(chatId.toString());
-        var workout = workoutService.create(userAccountDto);
 
         var button1 = InlineKeyboardButton.builder()
                 .text("Начать сет")
@@ -47,7 +41,7 @@ public class WorkoutCommand implements Command {
                         new InlineKeyboardRow(button1),
                         new InlineKeyboardRow(button2)
                 ));
-        updateConsumer.sendMessage(chatId, "Ваша тренировка: " + workout.getTitle());
+        //updateConsumer.sendMessage(chatId, "Ваша тренировка: " + workout.getTitle());
         updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Выберите действие:");
     }
 

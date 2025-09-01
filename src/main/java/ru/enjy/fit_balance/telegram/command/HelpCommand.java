@@ -1,25 +1,32 @@
 package ru.enjy.fit_balance.telegram.command;
 
-import lombok.RequiredArgsConstructor;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.enjy.fit_balance.telegram.TelegramBotService;
+import org.springframework.stereotype.Component;
+import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 
-@RequiredArgsConstructor
+@Component
 public class HelpCommand implements Command {
 
-    private final TelegramBotService telegramBotService;
+    private final CommandName command = HELP;
 
-    public static final String HELP_MESSAGE = String.format("✨ Доcтупные команды ✨\n\n"
+    private final String HELP_MESSAGE = String.format("✨ Доcтупные команды ✨\n\n"
 
                     + "%s - начать работу со мной\n"
                     + "%s - получить помощь в работе со мной\n",
-            START.getCommandName(), HELP.getCommandName());
+            START.getCommand(), HELP.getCommand());
+
+    public HelpCommand(CommandContainer commandContainer) {
+        commandContainer.setCommandMap(this);
+    }
 
     @Override
-    public void execute(Update update) {
+    public String getCommandName() {
+        return command.getCommand();
+    }
 
-        telegramBotService.sendTextMessageAsync(HELP_MESSAGE);
+    @Override
+    public void execute(UpdateConsumer updateConsumer, Long chatId) {
+        updateConsumer.sendMessage(chatId, HELP_MESSAGE);
     }
 }

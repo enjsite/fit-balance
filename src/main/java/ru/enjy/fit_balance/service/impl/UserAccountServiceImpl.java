@@ -144,4 +144,10 @@ public class UserAccountServiceImpl implements UserAccountService {
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with chatId `%s` not found".formatted(chatId))));
     }
 
+    @Override
+    public Boolean hasUserWithChatId(String chatId) {
+        Optional<UserAccount> userAccountOptional = userAccountRepository.findFirstByChatIdIgnoreCase(chatId);
+        return userAccountOptional.isPresent();
+    }
+
 }

@@ -1,19 +1,38 @@
 package ru.enjy.fit_balance.telegram.command;
 
-import lombok.RequiredArgsConstructor;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.enjy.fit_balance.telegram.TelegramBotService;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
+import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
-import java.util.Map;
+import java.util.List;
 
-@RequiredArgsConstructor
+import static ru.enjy.fit_balance.telegram.command.CommandName.START;
+
+@Component
 public class StartCommand implements Command {
 
-    private final TelegramBotService telegramBotService;
+    private final CommandName command = START;
+
+    public StartCommand(CommandContainer commandContainer) {
+        commandContainer.setCommandMap(this);
+    }
 
     @Override
-    public void execute(Update update) {
+    public void execute(UpdateConsumer updateConsumer, Long chatId) {
 
-        telegramBotService.sendTextMessageAsync("Привет! Хотите начать тренировку?", Map.of("Присоединиться!", "/registration"));
+        var button = InlineKeyboardButton.builder()
+                .text("Присоединиться!")
+                .callbackData("/registration")
+                .build();
+
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(new InlineKeyboardRow(button)));
+        updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,"Привет! Хотите начать тренировку?");
+    }
+
+    @Override
+    public String getCommandName() {
+        return command.getCommand();
     }
 }
