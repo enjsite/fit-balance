@@ -58,7 +58,7 @@ public class SetServiceImpl implements SetService {
     @Override
     public SetDto create(SetDto dto) {
         Set set = setMapper.toEntity(dto);
-        Superset superset = supersetRepository.getReferenceById(dto.getSuperset_id());
+        Superset superset = supersetRepository.getReferenceById(dto.getSupersetId());
         set.setSuperset(superset);
         set.setCreated(LocalDateTime.now());
         Set resultSet = setRepository.save(set);

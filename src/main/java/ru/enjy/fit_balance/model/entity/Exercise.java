@@ -37,7 +37,6 @@ public class Exercise {
     @JoinTable(name = "category_exercises",
             joinColumns = @JoinColumn(name = "exercise_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    //@ManyToMany(mappedBy = "exercises")
     private Set<Category> categories = new LinkedHashSet<>();
 
     @Override
