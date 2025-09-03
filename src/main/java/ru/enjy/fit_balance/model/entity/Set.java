@@ -18,9 +18,6 @@ public class Set {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "number", nullable = false)
-    private Integer number;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;

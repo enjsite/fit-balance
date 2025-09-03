@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SetDto {
     Long id;
-    Integer number;
     ExerciseDto exercise;
     Integer reps;
     Double weight;

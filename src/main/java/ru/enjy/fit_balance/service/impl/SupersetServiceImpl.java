@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
+import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.Superset;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.mapper.SupersetMapper;
@@ -67,6 +68,15 @@ public class SupersetServiceImpl implements SupersetService {
         Superset superset = supersetMapper.toEntity(dto);
         Workout workout = workoutRepository.getReferenceById(dto.getWorkoutId());
         superset.setWorkout(workout);
+        Superset resultSuperset = supersetRepository.save(superset);
+        return supersetMapper.toSupersetDto(resultSuperset);
+    }
+
+    @Override
+    public SupersetDto create(WorkoutDto workoutDto) {
+        Superset superset = new Superset();
+        superset.setWorkout(workoutMapper.toEntity(workoutDto));
+        superset.setActive(true);
         Superset resultSuperset = supersetRepository.save(superset);
         return supersetMapper.toSupersetDto(resultSuperset);
     }

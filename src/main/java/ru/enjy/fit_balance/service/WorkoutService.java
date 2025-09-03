@@ -27,4 +27,6 @@ public interface WorkoutService {
     WorkoutDto delete(Long id);
 
     void deleteMany(List<Long> ids);
+
+    WorkoutDto findFirstByActiveTrueAndUserChatId(String chatId);
 }

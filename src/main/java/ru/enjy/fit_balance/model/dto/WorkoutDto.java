@@ -18,6 +18,7 @@ public class WorkoutDto {
     String description;
     UserAccountDto user;
     Boolean pattern;
+    Boolean active;
     LocalDateTime created;
     List<SupersetDto> supersets;
 }

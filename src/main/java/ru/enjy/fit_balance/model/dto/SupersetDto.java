@@ -13,7 +13,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SupersetDto {
     Long id;
-    Integer number;
     Boolean active;
     List<SetDto> sets;
     Long workoutId;

@@ -3,6 +3,7 @@ package ru.enjy.fit_balance.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -65,6 +67,7 @@ public class WorkoutServiceImpl implements WorkoutService {
             workout.setTitle("Workout " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         }
         workout.setCreated(LocalDateTime.now());
+        workout.setActive(true);
         Workout resultWorkout = workoutRepository.save(workout);
         return workoutMapper.toWorkoutDto(resultWorkout);
     }
@@ -117,5 +120,13 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     public void deleteMany(List<Long> ids) {
         workoutRepository.deleteAllById(ids);
+    }
+
+    @Override
+    public WorkoutDto findFirstByActiveTrueAndUserChatId(String chatId) {
+
+        Optional<Workout> workout = workoutRepository.findFirstByActiveTrueAndUser_ChatIdLikeOrderByCreatedDesc(chatId);
+
+        return workout.map(workoutMapper::toWorkoutDto).orElse(null);
     }
 }
