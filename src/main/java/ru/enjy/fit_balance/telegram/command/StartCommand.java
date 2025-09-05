@@ -20,7 +20,7 @@ public class StartCommand implements Command {
     }
 
     @Override
-    public void execute(UpdateConsumer updateConsumer, Long chatId) {
+    public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
         var button = InlineKeyboardButton.builder()
                 .text("Присоединиться!")

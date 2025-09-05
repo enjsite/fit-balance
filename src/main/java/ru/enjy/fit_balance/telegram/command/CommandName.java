@@ -1,21 +1,21 @@
 package ru.enjy.fit_balance.telegram.command;
 
+import lombok.Getter;
+
+@Getter
 public enum CommandName {
 
     START("/start"),
     REGISTRATION("/registration"),
     WORKOUT("/workout"),
     SUPERSET("/superset"),
+    SET("/set"),
     HELP("/help");
 
     private final String command;
 
     CommandName(String command) {
         this.command = command;
-    }
-
-    public String getCommand() {
-        return command;
     }
 
     public static CommandName getByCommand(String command) {

@@ -20,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.enjy.fit_balance.telegram.command.Command;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
+import ru.enjy.fit_balance.telegram.command.CommandName;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,9 +56,22 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     }
 
     private void handleQuery(Long chatId, String message) {
+        Long exerciseId = null;
+        try {
+            exerciseId = Long.parseLong(message);
+            log.info("что пришло от юзера " + message);
+        } catch (NumberFormatException ignored) {}
+
         Command command = getCommand(message);
+        if (command == null && exerciseId != null) {
+            command = commandContainer.getCommand(CommandName.SET.getCommand());
+            log.info("is exercise id? " + exerciseId);
+            log.info("command " + command.getCommandName());
+            log.info("имя команды " + CommandName.SET.getCommand());
+        }
+
         if (command != null) {
-            command.execute(this, chatId);
+            command.execute(this, chatId, exerciseId);
         } else {
             sendMessage(chatId, "Неизвестная команда");
         }

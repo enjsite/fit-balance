@@ -11,6 +11,8 @@ import java.util.List;
 public interface ExerciseService {
     Page<ExerciseDto> getAll(Pageable pageable);
 
+    List<ExerciseDto> getAll();
+
     ExerciseDto getOne(Long id);
 
     List<ExerciseDto> getMany(List<Long> ids);

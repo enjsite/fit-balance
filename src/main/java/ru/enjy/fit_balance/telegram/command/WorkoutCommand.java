@@ -29,7 +29,7 @@ public class WorkoutCommand implements Command {
     }
 
     @Override
-    public void execute(UpdateConsumer updateConsumer, Long chatId) {
+    public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
         UserAccountDto userAccountDto = userAccountService.findFirstByChatId(chatId.toString());
         var workout = workoutService.create(userAccountDto);

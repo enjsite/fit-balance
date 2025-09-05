@@ -26,7 +26,7 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public void execute(UpdateConsumer updateConsumer, Long chatId) {
+    public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
         updateConsumer.sendMessage(chatId, HELP_MESSAGE);
     }
 }

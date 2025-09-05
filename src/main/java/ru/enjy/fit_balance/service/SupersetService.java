@@ -27,4 +27,6 @@ public interface SupersetService {
     SupersetDto delete(Long id);
 
     void deleteMany(List<Long> ids);
+
+    SupersetDto findFirstByActiveAndWorkout(Long workoutId);
 }

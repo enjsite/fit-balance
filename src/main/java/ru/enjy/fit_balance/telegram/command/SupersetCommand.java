@@ -8,11 +8,13 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.service.ExerciseService;
 import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static ru.enjy.fit_balance.telegram.command.CommandName.SUPERSET;
@@ -25,35 +27,41 @@ public class SupersetCommand implements Command {
     private final CommandName command = SUPERSET;
     private WorkoutService workoutService;
     private SupersetService supersetService;
+    private ExerciseService exerciseService;
 
     public SupersetCommand(CommandContainer commandContainer,
                            WorkoutService workoutService,
-                           SupersetService supersetService) {
+                           SupersetService supersetService,
+                           ExerciseService exerciseService) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
         this.supersetService = supersetService;
+        this.exerciseService = exerciseService;
     }
 
     @Override
-    public void execute(UpdateConsumer updateConsumer, Long chatId) {
+    public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
-        log.info("ищем активную тренировку для user chat id " + chatId.toString());
         WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
-        log.info(activeWorkout.getId().toString());
 
         if (activeWorkout != null) {
             var superset = supersetService.create(activeWorkout);
-            var button1 = InlineKeyboardButton.builder()
-                    .text("Обратные отжимания")
-                    .callbackData("/set")
-                    .build();
+            var exercises = exerciseService.getAll();
+            List<InlineKeyboardRow> exercisesButtons = new ArrayList<>();
+            exercises.forEach(ex -> {
+                var button = InlineKeyboardButton.builder()
+                        .text(ex.getTitle())
+                        .callbackData(ex.getId().toString())
+                        .build();
+                exercisesButtons.add(new InlineKeyboardRow(button));
+            });
+
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")
                     .callbackData("/help")
                     .build();
-            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
-                    new InlineKeyboardRow(button1),
-                    new InlineKeyboardRow(button2)));
+            exercisesButtons.add(new InlineKeyboardRow(button2));
+            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(exercisesButtons);
             updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Выберите упражнение:");
 
         } else {

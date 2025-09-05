@@ -28,7 +28,7 @@ public class RegistrationCommand implements Command {
     }
 
     @Override
-    public void execute(UpdateConsumer updateConsumer, Long chatId) {
+    public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
         var message = "Вы успешно зарегистрированы!";
 

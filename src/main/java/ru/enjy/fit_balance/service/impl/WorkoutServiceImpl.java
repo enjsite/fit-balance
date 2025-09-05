@@ -124,9 +124,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public WorkoutDto findFirstByActiveTrueAndUserChatId(String chatId) {
-
         Optional<Workout> workout = workoutRepository.findFirstByActiveTrueAndUser_ChatIdLikeOrderByCreatedDesc(chatId);
-
         return workout.map(workoutMapper::toWorkoutDto).orElse(null);
     }
 }

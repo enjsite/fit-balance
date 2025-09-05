@@ -21,6 +21,7 @@ import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.WorkoutService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -67,16 +68,27 @@ public class SupersetServiceImpl implements SupersetService {
     public SupersetDto create(SupersetDto dto) {
         Superset superset = supersetMapper.toEntity(dto);
         Workout workout = workoutRepository.getReferenceById(dto.getWorkoutId());
-        superset.setWorkout(workout);
-        Superset resultSuperset = supersetRepository.save(superset);
-        return supersetMapper.toSupersetDto(resultSuperset);
+//        superset.setWorkout(workout);
+//        superset.setCreated(LocalDateTime.now());
+//        Superset resultSuperset = supersetRepository.save(superset);
+        return create(superset, workout);
     }
 
     @Override
     public SupersetDto create(WorkoutDto workoutDto) {
         Superset superset = new Superset();
-        superset.setWorkout(workoutMapper.toEntity(workoutDto));
+        Workout workout = workoutMapper.toEntity(workoutDto);
+//        superset.setWorkout(workoutMapper.toEntity(workoutDto));
+//        superset.setActive(true);
+//        superset.setCreated(LocalDateTime.now());
+//        Superset resultSuperset = supersetRepository.save(superset);
+        return create(superset, workout);
+    }
+
+    private SupersetDto create(Superset superset, Workout workout) {
+        superset.setWorkout(workout);
         superset.setActive(true);
+        superset.setCreated(LocalDateTime.now());
         Superset resultSuperset = supersetRepository.save(superset);
         return supersetMapper.toSupersetDto(resultSuperset);
     }
@@ -122,5 +134,11 @@ public class SupersetServiceImpl implements SupersetService {
     @Override
     public void deleteMany(List<Long> ids) {
         supersetRepository.deleteAllById(ids);
+    }
+
+    @Override
+    public SupersetDto findFirstByActiveAndWorkout(Long workoutId) {
+        Optional<Superset> superset = supersetRepository.findFirstByActiveTrueAndWorkout_IdOrderByCreatedDesc(workoutId);
+        return superset.map(supersetMapper::toSupersetDto).orElse(null);
     }
 }

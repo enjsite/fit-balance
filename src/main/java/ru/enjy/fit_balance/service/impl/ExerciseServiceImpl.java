@@ -44,6 +44,12 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
+    public List<ExerciseDto> getAll() {
+        List<Exercise> exercises = exerciseRepository.findAll();
+        return exercises.stream().map(exerciseMapper::toExerciseDto).toList();
+    }
+
+    @Override
     public ExerciseDto getOne(Long id) {
         Optional<Exercise> exerciseOptional = exerciseRepository.findById(id);
         return exerciseMapper.toExerciseDto(exerciseOptional.orElseThrow(() ->
