@@ -48,11 +48,9 @@ public class SetCommand implements Command {
         SupersetDto activeSuperset = null;
         if (activeWorkout != null) {
             activeSuperset = supersetService.findFirstByActiveAndWorkout(activeWorkout);
-
         }
 
         if (activeSuperset != null) {
-
             var exerciseSet = setService.create(activeSuperset, exerciseId);
 
             var button1 = InlineKeyboardButton.builder()
@@ -62,8 +60,8 @@ public class SetCommand implements Command {
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                     new InlineKeyboardRow(button1))
             );
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Введите рабочий вес:: ");
-
+            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
+                    "Введите рабочий вес (число или число с точкой, например: 80.5): ");
 
         } else {
             var button = InlineKeyboardButton.builder()

@@ -18,7 +18,7 @@ public class WorkoutStateService {
     private final SupersetService supersetService;
     private final SetService setService;
 
-    public WorkoutInputState getCurrentWorkoutInputState(String chatId) {
+    public WorkoutInputState getState(String chatId) {
         if (!userAccountService.hasUserWithChatId(chatId.toString())) {
             return WorkoutInputState.UNREGISTERED_USER;
         }
@@ -38,7 +38,7 @@ public class WorkoutStateService {
         return getSetState(activeSet);
     }
 
-    public WorkoutInputState getSetState(SetDto set) {
+    private WorkoutInputState getSetState(SetDto set) {
         if (set == null) {
             return WorkoutInputState.WAITING_FOR_NEW_SET;
         }

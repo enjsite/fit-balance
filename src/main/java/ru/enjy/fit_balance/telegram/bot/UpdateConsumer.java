@@ -18,9 +18,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import ru.enjy.fit_balance.service.state.WorkoutStateService;
 import ru.enjy.fit_balance.telegram.command.Command;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
+import ru.enjy.fit_balance.telegram.text.TextInputHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,16 +35,17 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
 
+    private final TextInputHandler textInputHandler;
+
     private final TelegramClient telegramClient;
     private final CommandContainer commandContainer;
-    private final WorkoutStateService stateService;
 
     public UpdateConsumer(@Value("${telegram.bot.token}") String token,
                           CommandContainer commandContainer,
-                          WorkoutStateService stateService) {
+                          TextInputHandler textInputHandler) {
         this.telegramClient = new OkHttpTelegramClient(token);
         this.commandContainer = commandContainer;
-        this.stateService = stateService;
+        this.textInputHandler = textInputHandler;
     }
 
     @SneakyThrows
@@ -52,17 +53,20 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     public void consume(Update update) {
 
         Long chatId = getChatId(update);
+        Long userId = getUserId(update);// не нужно? или заменить chatId на userId? или это одно и то же?
+
         if (chatId == null) return;
+
+        log.info("userId" + userId);
+        log.info("chatId" + chatId);
 
         String query = getQuery(update);
         handleQuery(chatId, query);
     }
 
     private void handleQuery(Long chatId, String message) {
-        // разбить на методы
-
+        //команда
         if (message.startsWith("/")) {
-
             Long exerciseId = null;
             if (message.startsWith("/ex")) {
                 try {
@@ -76,11 +80,8 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
             } else {
                 sendMessage(chatId, "Неизвестная команда");
             }
-        } else {
-            // обрабатываем пользовательский ввод в зависимости от состояния
-
-            var state = stateService.getCurrentWorkoutInputState(chatId.toString());
-            log.info(state.toString());
+        } else { // текстовый ввод
+            textInputHandler.handle(this, chatId, message);
         }
 
     }
@@ -88,6 +89,11 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     private Long getChatId(Update update) {
         return update.hasCallbackQuery() ?
                 update.getCallbackQuery().getFrom().getId() : update.hasMessage() ? update.getMessage().getChatId() : null;
+    }
+
+    private Long getUserId(Update update) {
+        return update.hasCallbackQuery() ?
+                update.getCallbackQuery().getFrom().getId() : update.hasMessage() ? update.getMessage().getFrom().getId() : null;
     }
 
     private String getQuery(Update update) {

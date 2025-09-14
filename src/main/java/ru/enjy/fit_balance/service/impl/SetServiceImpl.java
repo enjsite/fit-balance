@@ -21,6 +21,9 @@ import ru.enjy.fit_balance.repository.SetRepository;
 import ru.enjy.fit_balance.repository.SupersetRepository;
 import ru.enjy.fit_balance.service.ExerciseService;
 import ru.enjy.fit_balance.service.SetService;
+import ru.enjy.fit_balance.service.SupersetService;
+import ru.enjy.fit_balance.service.WorkoutService;
+import ru.enjy.fit_balance.service.state.WorkoutInputState;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -42,6 +45,9 @@ public class SetServiceImpl implements SetService {
     private final SupersetRepository supersetRepository;
 
     private final SupersetMapper supersetMapper;
+
+    private final WorkoutService workoutService;
+    private final SupersetService supersetService;
 
     private final ExerciseService exerciseService;
 
@@ -122,6 +128,27 @@ public class SetServiceImpl implements SetService {
     }
 
     @Override
+    public SetDto saveWeight(SetDto setDto, Double weight) {
+        Set activeSet = setMapper.toEntity(setDto);
+        activeSet.setWeight(weight);
+        return save(activeSet);
+    }
+
+    @Override
+    public SetDto saveReps(SetDto setDto, Integer reps) {
+        Set activeSet = setMapper.toEntity(setDto);
+        activeSet.setReps(reps);
+        activeSet.setActive(false);
+        return save(activeSet);
+    }
+
+    @Override
+    public SetDto save(Set set) {
+        setRepository.save(set);
+        return setMapper.toSetDto(set);
+    }
+
+    @Override
     public SetDto delete(Long id) {
         Set set = setRepository.findById(id).orElse(null);
         if (set != null) {
@@ -142,5 +169,18 @@ public class SetServiceImpl implements SetService {
                 .max(Comparator.comparing(Set::getCreated))
                 .stream().findFirst();
         return activeSet.map(setMapper::toSetDto).orElse(null);
+    }
+
+    @Override
+    public SetDto findFirstByActiveAndChatId(String chatId) {
+        WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId);
+        if (activeWorkout == null) {
+            return null;
+        }
+        SupersetDto activeSuperset = supersetService.findFirstByActiveAndWorkout(activeWorkout);
+        if (activeSuperset == null) {
+            return null;
+        }
+        return findFirstByActiveAndSuperset(activeSuperset);
     }
 }
