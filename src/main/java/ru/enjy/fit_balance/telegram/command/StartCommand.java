@@ -22,13 +22,15 @@ public class StartCommand implements Command {
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
+        // не предлагать регистрацию тем, кто уже зарегистрирован
         var button = InlineKeyboardButton.builder()
                 .text("Присоединиться!")
                 .callbackData("/registration")
                 .build();
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(new InlineKeyboardRow(button)));
-        updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,"Привет! Хотите начать тренировку?");
+        updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,"Привет! Хотите присоединиться, " +
+                "чтобы сохранять тренировки, получать рекомендации и статистику в удобном формате?");
     }
 
     @Override

@@ -35,7 +35,7 @@ public class RegistrationCommand implements Command {
         if (!userAccountService.hasUserWithChatId(chatId.toString())) {
             userAccountService.create(chatId.toString());
         } else {
-            message = "У вас уже есть аккаунт.";
+            message = "Привет! У вас уже есть аккаунт.";
         }
 
         var imageInput = updateConsumer.createImageInputStream(Paths.get("/opt/app/img/trenirovka_nog_v_trenazhernom_zale.jpg"));

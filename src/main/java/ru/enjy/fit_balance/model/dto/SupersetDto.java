@@ -14,7 +14,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SupersetDto {
     Long id;
-    Boolean active;
+    boolean active;
     LocalDateTime created;
     List<SetDto> sets;
     Long workoutId;

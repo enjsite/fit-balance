@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.service.ExerciseService;
 import ru.enjy.fit_balance.service.SetService;
 import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.WorkoutService;
@@ -26,33 +27,43 @@ public class SetCommand implements Command {
     public SetCommand(CommandContainer commandContainer,
                       WorkoutService workoutService,
                       SupersetService supersetService,
-                      SetService setService) {
+                      SetService setService,
+                      ExerciseService exerciseService) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
         this.supersetService = supersetService;
         this.setService = setService;
+
+        var exercises = exerciseService.getAll();
+        exercises.forEach(exercise ->
+                commandContainer.setCommandMap("/ex" + exercise.getId().toString(), this));
     }
 
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
+        log.info("Зашли в Set Command");
+
         WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
         SupersetDto activeSuperset = null;
         if (activeWorkout != null) {
-            activeSuperset = supersetService.findFirstByActiveAndWorkout(activeWorkout.getId());
+            activeSuperset = supersetService.findFirstByActiveAndWorkout(activeWorkout);
+
         }
 
         if (activeSuperset != null) {
-            //var exerciseSet = setService.create(activeSuperset); //создать метод
 
-            var button2 = InlineKeyboardButton.builder()
-                    .text("Закончить тренировку")
-                    .callbackData("/help")
+            var exerciseSet = setService.create(activeSuperset, exerciseId);
+
+            var button1 = InlineKeyboardButton.builder()
+                    .text("Отменить")
+                    .callbackData("/superset")
                     .build();
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
-                    //new InlineKeyboardRow(button1),
-                    new InlineKeyboardRow(button2)));
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Надо заполнить данные о количестве повторов и весе нагрузки:");
+                    new InlineKeyboardRow(button1))
+            );
+            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Введите рабочий вес:: ");
+
 
         } else {
             var button = InlineKeyboardButton.builder()

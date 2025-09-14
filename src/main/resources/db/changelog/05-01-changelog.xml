@@ -13,4 +13,7 @@
     <changeSet id="1757074670623-2" author="enjyw (generated)">
         <addNotNullConstraint columnName="created" tableName="superset"/>
     </changeSet>
+    <changeSet id="1757081436174-1" author="enjyw (generated)">
+        <dropNotNullConstraint columnDataType="int" columnName="reps" tableName="set"/>
+    </changeSet>
 </databaseChangeLog>

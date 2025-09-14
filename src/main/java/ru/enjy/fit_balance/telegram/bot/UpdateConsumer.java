@@ -18,9 +18,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import ru.enjy.fit_balance.service.state.WorkoutStateService;
 import ru.enjy.fit_balance.telegram.command.Command;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
-import ru.enjy.fit_balance.telegram.command.CommandName;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,12 +36,15 @@ import java.util.concurrent.ThreadLocalRandom;
 public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
 
     private final TelegramClient telegramClient;
-
     private final CommandContainer commandContainer;
+    private final WorkoutStateService stateService;
 
-    public UpdateConsumer(@Value("${telegram.bot.token}") String token, CommandContainer commandContainer) {
+    public UpdateConsumer(@Value("${telegram.bot.token}") String token,
+                          CommandContainer commandContainer,
+                          WorkoutStateService stateService) {
         this.telegramClient = new OkHttpTelegramClient(token);
         this.commandContainer = commandContainer;
+        this.stateService = stateService;
     }
 
     @SneakyThrows
@@ -56,25 +59,35 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     }
 
     private void handleQuery(Long chatId, String message) {
-        Long exerciseId = null;
-        try {
-            exerciseId = Long.parseLong(message);
-            log.info("что пришло от юзера " + message);
-        } catch (NumberFormatException ignored) {}
+        // разбить на методы
 
-        Command command = getCommand(message);
-        if (command == null && exerciseId != null) {
-            command = commandContainer.getCommand(CommandName.SET.getCommand());
-            log.info("is exercise id? " + exerciseId);
-            log.info("command " + command.getCommandName());
-            log.info("имя команды " + CommandName.SET.getCommand());
-        }
+        if (message.startsWith("/")) {
 
-        if (command != null) {
-            command.execute(this, chatId, exerciseId);
+            Long exerciseId = null;
+            if (message.startsWith("/ex")) {
+                try {
+                    exerciseId = Long.parseLong(message.replace("/ex", ""));
+                } catch (NumberFormatException ignored) {}
+            }
+
+            var command = getCommand(message);
+            if (command != null) {
+                command.execute(this, chatId, exerciseId);
+            } else {
+                sendMessage(chatId, "Неизвестная команда");
+            }
         } else {
-            sendMessage(chatId, "Неизвестная команда");
+            // обрабатываем пользовательский ввод в зависимости от состояния
+
+            var state = stateService.getCurrentWorkoutInputState(chatId.toString());
+            log.info(state.toString());
         }
+
+    }
+
+    private Long getChatId(Update update) {
+        return update.hasCallbackQuery() ?
+                update.getCallbackQuery().getFrom().getId() : update.hasMessage() ? update.getMessage().getChatId() : null;
     }
 
     private String getQuery(Update update) {
@@ -90,11 +103,6 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     private String getMessage(Update update) {
         return update.hasMessage() ?
                 update.getMessage().getText() : null;
-    }
-
-    private Long getChatId(Update update) {
-        return update.hasCallbackQuery() ?
-                update.getCallbackQuery().getFrom().getId() : update.hasMessage() ? update.getMessage().getChatId() : null;
     }
 
     private Command getCommand(String command) {

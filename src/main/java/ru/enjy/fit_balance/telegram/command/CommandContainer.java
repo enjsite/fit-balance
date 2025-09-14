@@ -16,6 +16,10 @@ public class CommandContainer {
         commandMap.put(command.getCommandName(), command);
     }
 
+    public void setCommandMap(String commandName, Command command) {
+        commandMap.put(commandName, command);
+    }
+
     public Command getCommand(String commandIdentifier) {
         return commandMap.getOrDefault(commandIdentifier, null);
     }

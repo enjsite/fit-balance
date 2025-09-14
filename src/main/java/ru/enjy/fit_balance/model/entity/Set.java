@@ -22,7 +22,7 @@ public class Set {
     @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
 
-    @Column(name = "reps", nullable = false)
+    @Column(name = "reps")
     private Integer reps;
 
     @Column(name = "weight")

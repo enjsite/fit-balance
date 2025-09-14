@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
+import ru.enjy.fit_balance.model.dto.ExerciseDto;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
@@ -45,13 +46,15 @@ public class SupersetCommand implements Command {
         WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
 
         if (activeWorkout != null) {
+            //!!!
+            // Добавить проверку - если активный суперсет уже существует, возможно мы зашли сюда, чтобы выбрать другое упражнение
             var superset = supersetService.create(activeWorkout);
             var exercises = exerciseService.getAll();
             List<InlineKeyboardRow> exercisesButtons = new ArrayList<>();
             exercises.forEach(ex -> {
                 var button = InlineKeyboardButton.builder()
                         .text(ex.getTitle())
-                        .callbackData(ex.getId().toString())
+                        .callbackData("/ex" + ex.getId().toString())
                         .build();
                 exercisesButtons.add(new InlineKeyboardRow(button));
             });
