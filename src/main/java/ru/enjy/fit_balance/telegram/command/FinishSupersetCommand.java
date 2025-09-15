@@ -24,16 +24,13 @@ public class FinishSupersetCommand implements Command {
     private final CommandName command = FINISH_SUPERSET;
     private WorkoutService workoutService;
     private SupersetService supersetService;
-    private ExerciseService exerciseService;
 
     public FinishSupersetCommand(CommandContainer commandContainer,
                                  WorkoutService workoutService,
-                                 SupersetService supersetService,
-                                 ExerciseService exerciseService) {
+                                 SupersetService supersetService) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
         this.supersetService = supersetService;
-        this.exerciseService = exerciseService;
     }
 
     @Override
@@ -53,7 +50,7 @@ public class FinishSupersetCommand implements Command {
                     .build();
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")
-                    .callbackData("/help")
+                    .callbackData(FINISH_WORKOUT.getCommand())
                     .build();
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
                     List.of(

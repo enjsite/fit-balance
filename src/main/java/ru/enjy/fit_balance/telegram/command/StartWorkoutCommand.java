@@ -11,8 +11,7 @@ import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import java.util.List;
 
-import static ru.enjy.fit_balance.telegram.command.CommandName.START_SUPERSET;
-import static ru.enjy.fit_balance.telegram.command.CommandName.START_WORKOUT;
+import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 
 @Component
 public class StartWorkoutCommand implements Command {
@@ -41,7 +40,7 @@ public class StartWorkoutCommand implements Command {
                 .build();
         var button2 = InlineKeyboardButton.builder()
                 .text("Закончить тренировку")
-                .callbackData("/help")
+                .callbackData(FINISH_WORKOUT.getCommand())
                 .build();
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
                 List.of(

@@ -127,4 +127,12 @@ public class WorkoutServiceImpl implements WorkoutService {
         Optional<Workout> workout = workoutRepository.findFirstByActiveTrueAndUser_ChatIdLikeOrderByCreatedDesc(chatId);
         return workout.map(workoutMapper::toWorkoutDto).orElse(null);
     }
+
+    @Override
+    public WorkoutDto finishWorkout(WorkoutDto workoutDto) {
+        var activeWorkout = workoutMapper.toEntity(workoutDto);
+        activeWorkout.setActive(false);
+        workoutRepository.save(activeWorkout);
+        return workoutMapper.toWorkoutDto(activeWorkout);
+    }
 }

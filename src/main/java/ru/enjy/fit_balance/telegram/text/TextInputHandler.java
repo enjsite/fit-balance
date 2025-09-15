@@ -18,8 +18,7 @@ import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.enjy.fit_balance.telegram.command.CommandName.FINISH_SUPERSET;
-import static ru.enjy.fit_balance.telegram.command.CommandName.START_SUPERSET;
+import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 
 
 @Component
@@ -69,7 +68,7 @@ public class TextInputHandler {
                     .build();
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")
-                    .callbackData("/help")
+                    .callbackData(FINISH_WORKOUT.getCommand())
                     .build();
             exercisesButtons.add(new InlineKeyboardRow(button1));
             exercisesButtons.add(new InlineKeyboardRow(button2));
