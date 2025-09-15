@@ -15,21 +15,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.enjy.fit_balance.telegram.command.CommandName.START_WORKOUT;
-import static ru.enjy.fit_balance.telegram.command.CommandName.SUPERSET;
+import static ru.enjy.fit_balance.telegram.command.CommandName.START_SUPERSET;
 
 @Slf4j
 @Component
-public class SupersetCommand implements Command {
+public class StartSupersetCommand implements Command {
 
-    private final CommandName command = SUPERSET;
+    private final CommandName command = START_SUPERSET;
     private WorkoutService workoutService;
     private SupersetService supersetService;
     private ExerciseService exerciseService;
 
-    public SupersetCommand(CommandContainer commandContainer,
-                           WorkoutService workoutService,
-                           SupersetService supersetService,
-                           ExerciseService exerciseService) {
+    public StartSupersetCommand(CommandContainer commandContainer,
+                                WorkoutService workoutService,
+                                SupersetService supersetService,
+                                ExerciseService exerciseService) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
         this.supersetService = supersetService;

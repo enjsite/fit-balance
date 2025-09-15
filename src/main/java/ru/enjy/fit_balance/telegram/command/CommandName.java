@@ -8,8 +8,8 @@ public enum CommandName {
     START("/start"),
     REGISTRATION("/registration"),
     START_WORKOUT("/start_workout"),
-    SUPERSET("/superset"),
-    SET("/set"),
+    START_SUPERSET("/start_superset"),
+    ADD_SET("/add_set"),
     HELP("/help");
 
     private final String command;

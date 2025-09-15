@@ -18,6 +18,8 @@ import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.enjy.fit_balance.telegram.command.CommandName.START_SUPERSET;
+
 
 @Component
 @RequiredArgsConstructor
@@ -90,7 +92,7 @@ public class TextInputHandler {
 
         var button1 = InlineKeyboardButton.builder()
                 .text("Отменить")
-                .callbackData("/superset")
+                .callbackData(START_SUPERSET.getCommand())
                 .build();
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                 new InlineKeyboardRow(button1))

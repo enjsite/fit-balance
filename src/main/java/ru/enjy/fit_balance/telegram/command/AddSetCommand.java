@@ -15,20 +15,22 @@ import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import java.util.List;
 
+import static ru.enjy.fit_balance.telegram.command.CommandName.START_SUPERSET;
+
 @Slf4j
 @Component
-public class SetCommand implements Command {
+public class AddSetCommand implements Command {
 
-    private final CommandName command = CommandName.SET;
+    private final CommandName command = CommandName.ADD_SET;
     private WorkoutService workoutService;
     private SupersetService supersetService;
     private SetService setService;
 
-    public SetCommand(CommandContainer commandContainer,
-                      WorkoutService workoutService,
-                      SupersetService supersetService,
-                      SetService setService,
-                      ExerciseService exerciseService) {
+    public AddSetCommand(CommandContainer commandContainer,
+                         WorkoutService workoutService,
+                         SupersetService supersetService,
+                         SetService setService,
+                         ExerciseService exerciseService) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
         this.supersetService = supersetService;
@@ -55,7 +57,7 @@ public class SetCommand implements Command {
 
             var button1 = InlineKeyboardButton.builder()
                     .text("Отменить")
-                    .callbackData("/superset")
+                    .callbackData(START_SUPERSET.getCommand())
                     .build();
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                     new InlineKeyboardRow(button1))
@@ -66,7 +68,7 @@ public class SetCommand implements Command {
         } else {
             var button = InlineKeyboardButton.builder()
                     .text("Начать сет")
-                    .callbackData("/superset")
+                    .callbackData(START_SUPERSET.getCommand())
                     .build();
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(new InlineKeyboardRow(button)));
             updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "У вас нет активных сетов. " +
