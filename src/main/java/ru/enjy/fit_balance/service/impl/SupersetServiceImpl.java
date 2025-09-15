@@ -144,4 +144,12 @@ public class SupersetServiceImpl implements SupersetService {
                 .stream().findFirst();
         return activeSuperset.map(supersetMapper::toSupersetDto).orElse(null);
     }
+
+    @Override
+    public SupersetDto finishSuperset(SupersetDto dto) {
+        var superset = supersetMapper.toEntity(dto);
+        superset.setActive(false);
+        supersetRepository.save(superset);
+        return supersetMapper.toSupersetDto(superset);
+    }
 }

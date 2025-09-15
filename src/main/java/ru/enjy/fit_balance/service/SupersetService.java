@@ -31,4 +31,6 @@ public interface SupersetService {
     SupersetDto findFirstByActiveAndWorkout(Long workoutId);
 
     SupersetDto findFirstByActiveAndWorkout(WorkoutDto workoutDto);
+
+    SupersetDto finishSuperset(SupersetDto dto);
 }
