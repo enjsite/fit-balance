@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
@@ -14,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static ru.enjy.fit_balance.telegram.command.CommandName.REGISTRATION;
+import static ru.enjy.fit_balance.telegram.command.CommandName.START_WORKOUT;
 
 @Slf4j
 @Component
@@ -44,7 +44,7 @@ public class RegistrationCommand implements Command {
         }
         var button = InlineKeyboardButton.builder()
                 .text("Начать тренировку")
-                .callbackData("/workout")
+                .callbackData(START_WORKOUT.getCommand())
                 .build();
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(new InlineKeyboardRow(button)));
         updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, message);

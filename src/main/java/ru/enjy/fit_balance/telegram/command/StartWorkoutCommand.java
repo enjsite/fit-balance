@@ -11,18 +11,18 @@ import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import java.util.List;
 
-import static ru.enjy.fit_balance.telegram.command.CommandName.WORKOUT;
+import static ru.enjy.fit_balance.telegram.command.CommandName.START_WORKOUT;
 
 @Component
-public class WorkoutCommand implements Command {
+public class StartWorkoutCommand implements Command {
 
-    private final CommandName command = WORKOUT;
+    private final CommandName command = START_WORKOUT;
     private final WorkoutService workoutService;
     private final UserAccountService userAccountService;
 
-    public WorkoutCommand(CommandContainer commandContainer,
-                          WorkoutService workoutService,
-                          UserAccountService userAccountService) {
+    public StartWorkoutCommand(CommandContainer commandContainer,
+                               WorkoutService workoutService,
+                               UserAccountService userAccountService) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
         this.userAccountService = userAccountService;

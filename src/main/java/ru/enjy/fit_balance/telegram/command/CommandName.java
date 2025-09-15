@@ -7,7 +7,7 @@ public enum CommandName {
 
     START("/start"),
     REGISTRATION("/registration"),
-    WORKOUT("/workout"),
+    START_WORKOUT("/start_workout"),
     SUPERSET("/superset"),
     SET("/set"),
     HELP("/help");

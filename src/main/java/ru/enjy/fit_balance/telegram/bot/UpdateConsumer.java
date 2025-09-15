@@ -20,6 +20,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.enjy.fit_balance.telegram.command.Command;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
+import ru.enjy.fit_balance.telegram.command.CommandName;
+import ru.enjy.fit_balance.telegram.command.StartCommand;
 import ru.enjy.fit_balance.telegram.text.TextInputHandler;
 
 import java.io.IOException;
@@ -53,12 +55,9 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     public void consume(Update update) {
 
         Long chatId = getChatId(update);
-        Long userId = getUserId(update);// не нужно? или заменить chatId на userId? или это одно и то же?
-
         if (chatId == null) return;
 
-        log.info("userId" + userId);
-        log.info("chatId" + chatId);
+        log.info("команда или имя" + CommandName.START_WORKOUT.getCommand());
 
         String query = getQuery(update);
         handleQuery(chatId, query);
