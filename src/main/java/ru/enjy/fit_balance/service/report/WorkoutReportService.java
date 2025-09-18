@@ -67,15 +67,43 @@ public class WorkoutReportService {
             }
         }
 
+        sb.append("✅ *Итоги:*\n")
+                .append("• Упражнений: ").append(countExercises(workoutDto)).append("\n")
+                .append("• Сетов: ").append(countSets(workoutDto)).append("\n")
+                .append("• Общий тоннаж: ").append(calculateTotalWeight(workoutDto)).append(" кг\n");
+
         return sb.toString();
+    }
+
+    private long countExercises(WorkoutDto workout) {
+        return workout.getSupersets().stream()
+                .flatMap(s -> s.getSets().stream())
+                .map(set -> set.getExercise().getTitle())
+                .distinct()
+                .count();
+                //+ workout.getExercises().size();
+    }
+
+    private long countSets(WorkoutDto workout) {
+        return workout.getSupersets().stream()
+                .mapToLong(s -> s.getSets().size())
+                .sum();
+    }
+
+    private double calculateTotalWeight(WorkoutDto workout) {
+        return workout.getSupersets().stream()
+                .flatMap(s -> s.getSets().stream())
+                .filter(s -> s.getWeight() != null && s.getReps() != null)
+                .mapToDouble(s -> s.getWeight() * s.getReps())
+                .sum();
     }
 
     private String formatSet(SetDto setDto) {
         StringBuilder sb = new StringBuilder();
         sb.append("`")
-                .append(escapeMd(setDto.getReps().toString()))
+                .append(setDto.getReps())
                 .append("*")
-                .append(escapeMd(setDto.getWeight().toString()))
+                .append(setDto.getWeight().toString())
                 .append("кг").append("`");
         return sb.toString();
     }
