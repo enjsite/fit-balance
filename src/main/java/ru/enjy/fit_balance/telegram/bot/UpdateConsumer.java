@@ -20,8 +20,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.enjy.fit_balance.telegram.command.Command;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
-import ru.enjy.fit_balance.telegram.command.CommandName;
-import ru.enjy.fit_balance.telegram.command.StartCommand;
 import ru.enjy.fit_balance.telegram.text.TextInputHandler;
 
 import java.io.IOException;
@@ -57,8 +55,6 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
         Long chatId = getChatId(update);
         if (chatId == null) return;
 
-        log.info("команда или имя" + CommandName.START_WORKOUT.getCommand());
-
         String query = getQuery(update);
         handleQuery(chatId, query);
     }
@@ -88,11 +84,6 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     private Long getChatId(Update update) {
         return update.hasCallbackQuery() ?
                 update.getCallbackQuery().getFrom().getId() : update.hasMessage() ? update.getMessage().getChatId() : null;
-    }
-
-    private Long getUserId(Update update) {
-        return update.hasCallbackQuery() ?
-                update.getCallbackQuery().getFrom().getId() : update.hasMessage() ? update.getMessage().getFrom().getId() : null;
     }
 
     private String getQuery(Update update) {

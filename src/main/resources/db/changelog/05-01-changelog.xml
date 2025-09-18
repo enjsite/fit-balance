@@ -16,4 +16,7 @@
     <changeSet id="1757081436174-1" author="enjyw (generated)">
         <dropNotNullConstraint columnDataType="int" columnName="reps" tableName="set"/>
     </changeSet>
+    <changeSet id="make-user-id-nullable-in-exercise" author="enjyw">
+        <dropNotNullConstraint tableName="exercise" columnName="user_id"/>
+    </changeSet>
 </databaseChangeLog>
