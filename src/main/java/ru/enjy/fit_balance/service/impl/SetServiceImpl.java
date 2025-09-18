@@ -160,7 +160,7 @@ public class SetServiceImpl implements SetService {
     @Override
     public SetDto findFirstByActiveAndSuperset(SupersetDto supersetDto) {
         Optional<Set> activeSet = supersetMapper.toEntity(supersetDto).getSets().stream()
-                .filter(Set::getActive)
+                .filter(Set::isActive)
                 .max(Comparator.comparing(Set::getCreated))
                 .stream().findFirst();
         return activeSet.map(setMapper::toSetDto).orElse(null);

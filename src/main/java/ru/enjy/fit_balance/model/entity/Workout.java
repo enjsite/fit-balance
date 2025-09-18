@@ -32,10 +32,10 @@ public class Workout {
     private UserAccount user;
 
     @Column(name = "pattern")
-    private Boolean pattern;
+    private boolean pattern;
 
     @Column(name = "active")
-    private Boolean active;
+    private boolean active;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;

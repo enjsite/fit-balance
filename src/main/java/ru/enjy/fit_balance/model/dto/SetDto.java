@@ -17,7 +17,7 @@ public class SetDto {
     Integer reps;
     Double weight;
     Integer time;
-    Boolean active;
+    boolean active;
     LocalDateTime created;
     Long supersetId;
 }
