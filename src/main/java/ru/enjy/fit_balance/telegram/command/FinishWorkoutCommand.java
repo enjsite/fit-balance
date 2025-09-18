@@ -5,8 +5,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
-import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
+import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import java.util.List;
@@ -19,10 +19,14 @@ public class FinishWorkoutCommand implements Command {
     private final CommandName command = FINISH_WORKOUT;
     private final WorkoutService workoutService;
 
+    private final WorkoutReportService workoutReportService;
+
     public FinishWorkoutCommand(CommandContainer commandContainer,
-                                WorkoutService workoutService) {
+                                WorkoutService workoutService,
+                                WorkoutReportService workoutReportService) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
+        this.workoutReportService = workoutReportService;
     }
 
     @Override
@@ -35,9 +39,11 @@ public class FinishWorkoutCommand implements Command {
             updateConsumer.sendMessage(chatId, "Невозможно завершить тренировку - нет ни одной активной.");
         }
 
-        updateConsumer.sendMessage(chatId, "Тренировка завершена. Отличная работа! \n" +
-                "Ваша тренировка: " + activeWorkout.getTitle());
+        updateConsumer.sendMessage(chatId, "\uD83C\uDFC6✨ *Тренировка завершена!* ✨\uD83C\uDFC6 " +
+                "\n\uD83D\uDCAA Отличная работа, так держать! \uD83C\uDF1F \n\n" +
+                workoutReportService.getWorkoutReport(activeWorkout.getId()));
 
+        // todo: вывести в отдельном треде с задержкой в 5-10 минут
         var button = InlineKeyboardButton.builder()
                 .text("Начать тренировку")
                 .callbackData(START_WORKOUT.getCommand())

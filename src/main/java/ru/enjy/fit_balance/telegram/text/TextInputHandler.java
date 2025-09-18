@@ -73,6 +73,7 @@ public class TextInputHandler {
             exercisesButtons.add(new InlineKeyboardRow(button1));
             exercisesButtons.add(new InlineKeyboardRow(button2));
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(exercisesButtons);
+
             updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Выберите упражнение:");
 
         } catch (NumberFormatException e) {

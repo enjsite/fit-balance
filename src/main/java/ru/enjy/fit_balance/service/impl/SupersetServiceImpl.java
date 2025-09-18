@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import ru.enjy.fit_balance.model.dto.SetDto;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.Superset;
@@ -17,6 +18,7 @@ import ru.enjy.fit_balance.model.mapper.SupersetMapper;
 import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.repository.SupersetRepository;
 import ru.enjy.fit_balance.repository.WorkoutRepository;
+import ru.enjy.fit_balance.service.SetService;
 import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.WorkoutService;
 
@@ -33,16 +35,13 @@ import java.util.Optional;
 public class SupersetServiceImpl implements SupersetService {
 
     private final SupersetMapper supersetMapper;
+    private final ObjectMapper objectMapper;
+    private final WorkoutMapper workoutMapper;
 
     private final SupersetRepository supersetRepository;
-
-    private final ObjectMapper objectMapper;
-
-    private final WorkoutService workoutService;
-
     private final WorkoutRepository workoutRepository;
 
-    private final WorkoutMapper workoutMapper;
+    //private final SetService setService;
 
     @Override
     public Page<SupersetDto> getAll(Pageable pageable) {

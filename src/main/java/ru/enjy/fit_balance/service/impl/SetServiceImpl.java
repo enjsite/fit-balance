@@ -37,21 +37,16 @@ import java.util.Optional;
 public class SetServiceImpl implements SetService {
 
     private final SetMapper setMapper;
+    private final ObjectMapper objectMapper;
+    private final SupersetMapper supersetMapper;
+    private final ExerciseMapper exerciseMapper;
 
     private final SetRepository setRepository;
-
-    private final ObjectMapper objectMapper;
-
     private final SupersetRepository supersetRepository;
-
-    private final SupersetMapper supersetMapper;
 
     private final WorkoutService workoutService;
     private final SupersetService supersetService;
-
     private final ExerciseService exerciseService;
-
-    private final ExerciseMapper exerciseMapper;
 
     @Override
     public Page<SetDto> getAll(Pageable pageable) {

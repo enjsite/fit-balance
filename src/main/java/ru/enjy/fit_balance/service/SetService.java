@@ -39,4 +39,6 @@ public interface SetService {
     SetDto findFirstByActiveAndSuperset(SupersetDto supersetDto);
 
     SetDto findFirstByActiveAndChatId(String chatId);
+
+    //String formatSet(SetDto setDto);
 }

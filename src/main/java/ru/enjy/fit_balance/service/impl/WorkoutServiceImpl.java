@@ -10,12 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import ru.enjy.fit_balance.model.dto.SetDto;
+import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
 import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.repository.WorkoutRepository;
+import ru.enjy.fit_balance.service.SetService;
+import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.WorkoutService;
 
 import java.io.IOException;
@@ -32,12 +36,10 @@ import java.util.Optional;
 public class WorkoutServiceImpl implements WorkoutService {
 
     private final WorkoutMapper workoutMapper;
+    private final ObjectMapper objectMapper;
+    private final UserAccountMapper userAccountMapper;
 
     private final WorkoutRepository workoutRepository;
-
-    private final ObjectMapper objectMapper;
-
-    private final UserAccountMapper userAccountMapper;
 
     @Override
     public Page<WorkoutDto> getAll(Pageable pageable) {
@@ -135,4 +137,5 @@ public class WorkoutServiceImpl implements WorkoutService {
         workoutRepository.save(activeWorkout);
         return workoutMapper.toWorkoutDto(activeWorkout);
     }
+
 }

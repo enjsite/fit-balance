@@ -32,4 +32,6 @@ public interface WorkoutService {
     WorkoutDto findFirstByActiveTrueAndUserChatId(String chatId);
 
     WorkoutDto finishWorkout(WorkoutDto workoutDto);
+
+    //String getWorkoutReport(Long workoutId);
 }
