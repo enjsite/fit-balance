@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.model.entity.SetApproachType;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,7 +19,7 @@ public interface SupersetService {
 
     SupersetDto create(SupersetDto dto);
 
-    SupersetDto create(WorkoutDto workoutDto);
+    SupersetDto create(WorkoutDto workoutDto, SetApproachType type);
 
     SupersetDto patch(Long id, JsonNode patchNode) throws IOException;
 

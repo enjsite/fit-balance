@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.enjy.fit_balance.model.dto.SetDto;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.model.entity.SetApproachType;
 import ru.enjy.fit_balance.model.entity.Superset;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.mapper.SupersetMapper;
@@ -72,8 +73,9 @@ public class SupersetServiceImpl implements SupersetService {
     }
 
     @Override
-    public SupersetDto create(WorkoutDto workoutDto) {
+    public SupersetDto create(WorkoutDto workoutDto, SetApproachType type) {
         Superset superset = new Superset();
+        superset.setType(type);
         Workout workout = workoutMapper.toEntity(workoutDto);
         return create(superset, workout);
     }

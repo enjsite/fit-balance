@@ -33,4 +33,9 @@ public class Superset {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "workout_id", nullable = false)
     private Workout workout;
+
+    @Enumerated
+    @Column(name = "type")
+    private SetApproachType type;
+
 }

@@ -53,6 +53,7 @@ public class AddSetCommand implements Command {
         }
 
         if (activeSuperset != null) {
+
             var exerciseSet = setService.create(activeSuperset, exerciseId);
 
             var button1 = InlineKeyboardButton.builder()

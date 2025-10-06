@@ -19,17 +19,17 @@ import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 
 @Slf4j
 @Component
-public class StartSupersetCommand implements Command {
+public class StartSinglesetCommand implements Command {
 
-    private final CommandName command = START_SUPERSET;
+    private final CommandName command = START_SINGLESET;
     private WorkoutService workoutService;
     private SupersetService supersetService;
     private ExerciseService exerciseService;
 
-    public StartSupersetCommand(CommandContainer commandContainer,
-                                WorkoutService workoutService,
-                                SupersetService supersetService,
-                                ExerciseService exerciseService) {
+    public StartSinglesetCommand(CommandContainer commandContainer,
+                                 WorkoutService workoutService,
+                                 SupersetService supersetService,
+                                 ExerciseService exerciseService) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
         this.supersetService = supersetService;
@@ -44,7 +44,7 @@ public class StartSupersetCommand implements Command {
         if (activeWorkout != null) {
             //!!!
             // Добавить проверку - если активный суперсет уже существует, возможно мы зашли сюда, чтобы выбрать другое упражнение
-            var superset = supersetService.create(activeWorkout, SetApproachType.SUPERSET);
+            var superset = supersetService.create(activeWorkout, SetApproachType.SET);
             var exercises = exerciseService.getAll();
             List<InlineKeyboardRow> exercisesButtons = new ArrayList<>();
             exercises.forEach(ex -> {
