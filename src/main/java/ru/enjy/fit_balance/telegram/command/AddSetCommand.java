@@ -44,8 +44,6 @@ public class AddSetCommand implements Command {
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
-        log.info("Зашли в Set Command");
-
         WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
         SupersetDto activeSuperset = null;
         if (activeWorkout != null) {

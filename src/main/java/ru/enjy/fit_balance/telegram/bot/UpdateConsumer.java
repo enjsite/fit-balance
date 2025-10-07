@@ -117,8 +117,8 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
         );
 
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup(keyboardRows);
-        markup.setResizeKeyboard(true);
-        sendMessage.setReplyMarkup(markup);
+       // markup.setResizeKeyboard(true);
+        //sendMessage.setReplyMarkup(markup);
 
         telegramClient.execute(sendMessage);
     }

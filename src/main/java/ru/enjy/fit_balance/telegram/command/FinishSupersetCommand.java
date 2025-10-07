@@ -44,8 +44,12 @@ public class FinishSupersetCommand implements Command {
                 supersetService.finishSuperset(activeSuperset);
             }
 
-            var button1 = InlineKeyboardButton.builder()
+            var button0 = InlineKeyboardButton.builder()
                     .text("Начать сет")
+                    .callbackData(START_SINGLESET.getCommand())
+                    .build();
+            var button1 = InlineKeyboardButton.builder()
+                    .text("Начать суперсет")
                     .callbackData(START_SUPERSET.getCommand())
                     .build();
             var button2 = InlineKeyboardButton.builder()
@@ -54,6 +58,7 @@ public class FinishSupersetCommand implements Command {
                     .build();
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
                     List.of(
+                            new InlineKeyboardRow(button0),
                             new InlineKeyboardRow(button1),
                             new InlineKeyboardRow(button2)
                     ));
