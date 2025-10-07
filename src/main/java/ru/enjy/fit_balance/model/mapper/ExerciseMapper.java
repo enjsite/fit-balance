@@ -14,7 +14,6 @@ public interface ExerciseMapper {
 
     Exercise updateWithNull(ExerciseDto exerciseDto, @MappingTarget Exercise exercise);
 
-    //@Mapping(source = "userId", target = "user.id")
     @Mapping(target = "user", expression = "java(toUser(exerciseDto.getUserId()))")
     Exercise toEntity(ExerciseDto exerciseDto);
 
