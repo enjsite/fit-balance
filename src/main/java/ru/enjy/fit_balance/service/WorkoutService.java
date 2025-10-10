@@ -33,5 +33,5 @@ public interface WorkoutService {
 
     WorkoutDto finishWorkout(WorkoutDto workoutDto);
 
-    //String getWorkoutReport(Long workoutId);
+    List<SupersetDto> getFilledSetsByWorkout(WorkoutDto workoutDto);
 }

@@ -64,6 +64,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public WorkoutDto create(WorkoutDto dto) {
+        closeAllUserActiveWorkout(dto.getUser().getId()); // завершаем все активные тренировки
         Workout workout = workoutMapper.toEntity(dto);
         if (workout.getTitle() == null) {
             workout.setTitle("Workout " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
@@ -72,6 +73,16 @@ public class WorkoutServiceImpl implements WorkoutService {
         workout.setActive(true);
         Workout resultWorkout = workoutRepository.save(workout);
         return workoutMapper.toWorkoutDto(resultWorkout);
+    }
+
+    private void closeAllUserActiveWorkout(Long userId) {
+        var activeWorkouts = workoutRepository.findAllByActiveTrueAndUser_Id(userId);
+        log.info("закрываем активные тренировки");
+        activeWorkouts.forEach(workout -> {
+            workout.setActive(false);
+            log.info("что-то найдено и закрыто " + workout.getTitle());
+            workoutRepository.save(workout);
+        });
     }
 
     @Override
@@ -138,4 +149,17 @@ public class WorkoutServiceImpl implements WorkoutService {
         return workoutMapper.toWorkoutDto(activeWorkout);
     }
 
+    @Override
+    public List<SupersetDto> getFilledSetsByWorkout(WorkoutDto workoutDto) {
+        if (workoutDto == null || workoutDto.getSupersets() == null) {
+            return List.of();
+        }
+
+        return workoutDto.getSupersets().stream()
+                .filter(supersetDto -> supersetDto.getSets()!= null &&
+                        supersetDto.getSets().stream()
+                                .anyMatch(a -> a.getReps() != null && a.getReps() > 0)
+                )
+                .toList();
+    }
 }

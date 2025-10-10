@@ -153,4 +153,15 @@ public class SupersetServiceImpl implements SupersetService {
         supersetRepository.save(superset);
         return supersetMapper.toSupersetDto(superset);
     }
+
+    @Override
+    public List<SetDto> getFilledSetsBySuperset(SupersetDto supersetDto) {
+        if (supersetDto == null || supersetDto.getSets() == null) {
+            return List.of();
+        }
+
+        return supersetDto.getSets().stream()
+                .filter(setDto -> setDto.getReps() != null && setDto.getReps() > 0)
+                .toList();
+    }
 }

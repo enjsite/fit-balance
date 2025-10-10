@@ -3,6 +3,7 @@ package ru.enjy.fit_balance.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import ru.enjy.fit_balance.model.dto.SetDto;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.SetApproachType;
@@ -35,5 +36,6 @@ public interface SupersetService {
 
     SupersetDto finishSuperset(SupersetDto dto);
 
+    List<SetDto> getFilledSetsBySuperset(SupersetDto supersetDto);
 
 }

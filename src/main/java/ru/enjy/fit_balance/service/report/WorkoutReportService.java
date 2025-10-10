@@ -8,6 +8,7 @@ import ru.enjy.fit_balance.model.dto.ExerciseDto;
 import ru.enjy.fit_balance.model.dto.SetDto;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.WorkoutService;
 
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.Objects;
 @Service
 @Transactional
 public class WorkoutReportService {
+
+    private final SupersetService supersetService;
 
     private final WorkoutService workoutService;
 
@@ -30,13 +33,15 @@ public class WorkoutReportService {
                 .append("*\n\n");
 
         int ssCounter = 1;
-        if (workoutDto.getSupersets() != null) {
-            for (SupersetDto superset : workoutDto.getSupersets()) {
+        var workoutSets = workoutService.getFilledSetsByWorkout(workoutDto);
+        if (workoutSets != null) {
+            for (SupersetDto superset : workoutSets) {
 
                 int sCounter = 1;
-                if (superset.getSets() != null) {
+                var approaches = supersetService.getFilledSetsBySuperset(superset);
+                if (approaches != null) {
                     if (isSupersetSingleExerciseType(superset)) {
-                        for (SetDto set : superset.getSets()) {
+                        for (SetDto set : approaches) {
                             if (sCounter++ == 1) {
                                 sb.append(ssCounter++)
                                         .append(". ")
@@ -51,7 +56,7 @@ public class WorkoutReportService {
                     } else {
                         sb.append(ssCounter++).append(". 🔁 *Суперсет ").append("*\n");
 
-                        for (SetDto set : superset.getSets()) {
+                        for (SetDto set : approaches) {
                             sb.append("  ")
                                     .append("• ")
                                     .append(escapeMd(set.getExercise().getTitle()))
@@ -76,17 +81,16 @@ public class WorkoutReportService {
     }
 
     private long countExercises(WorkoutDto workout) {
-        return workout.getSupersets().stream()
-                .flatMap(s -> s.getSets().stream())
+        return workoutService.getFilledSetsByWorkout(workout).stream()
+                .flatMap(s -> supersetService.getFilledSetsBySuperset(s).stream())
                 .map(set -> set.getExercise().getTitle())
                 .distinct()
                 .count();
-                //+ workout.getExercises().size();
     }
 
     private long countSets(WorkoutDto workout) {
-        return workout.getSupersets().stream()
-                .mapToLong(s -> s.getSets().size())
+        return workoutService.getFilledSetsByWorkout(workout).stream()
+                .mapToLong(s -> supersetService.getFilledSetsBySuperset(s).size())
                 .sum();
     }
 
@@ -100,10 +104,12 @@ public class WorkoutReportService {
 
     private String formatSet(SetDto setDto) {
         StringBuilder sb = new StringBuilder();
+        var reps = setDto.getReps() != null ? setDto.getReps().toString(): "0";
+        var weight = setDto.getWeight() != null ? setDto.getWeight().toString() : "0";
         sb.append("`")
-                .append(setDto.getReps())
+                .append(reps)
                 .append("*")
-                .append(setDto.getWeight().toString())
+                .append(weight)
                 .append("кг").append("`");
         return sb.toString();
     }
