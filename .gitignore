@@ -35,3 +35,7 @@ build/
 # Environment variables
 .env
 .env.*
+
+# pgAdmin
+docker/pgadmin/pgpass
+/docker/pgadmin/pgpass
