@@ -6,9 +6,9 @@ services:
     image: postgres:17.4
     restart: always
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: fitbalance
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -53,11 +53,11 @@ services:
     depends_on:
       - postgres
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/fitbalance
-      - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_DATASOURCE_USER=root
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_DATASOURCE_USER=${SPRING_DATASOURCE_USER}
       - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
-      - TELEGRAM_BOT_TOKEN=8150171260:AAFAmLVkw-l7otHmxwWRpbw4ecq-vMHVEac
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
     networks:
       - dev
 volumes:
