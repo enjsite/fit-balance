@@ -6,7 +6,6 @@ import lombok.Getter;
 public enum CommandName {
 
     START("/start"),
-    REGISTRATION("/registration"),
     START_WORKOUT("/start_workout"),
     FINISH_WORKOUT("/finish_workout"),
     START_SUPERSET("/start_superset"),
