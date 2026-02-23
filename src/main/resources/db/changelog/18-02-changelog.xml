@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="2026-02-18-01-add-status-to-workout" author="fitli">
+
+        <!-- 1. Добавляем колонку status (пока nullable) -->
+        <addColumn tableName="workout">
+            <column name="status" type="varchar(50)"/>
+        </addColumn>
+
+        <!-- 2. Переносим данные из active -->
+        <update tableName="workout">
+            <column name="status" value="IN_PROGRESS"/>
+            <where>active = true</where>
+        </update>
+
+        <update tableName="workout">
+            <column name="status" value="COMPLETED"/>
+            <where>active = false</where>
+        </update>
+
+        <!-- 3. Для старых записей без active -->
+        <update tableName="workout">
+            <column name="status" value="COMPLETED"/>
+            <where>status IS NULL</where>
+        </update>
+
+        <!-- 4. Делаем NOT NULL -->
+        <addNotNullConstraint
+                tableName="workout"
+                columnName="status"
+                columnDataType="varchar(50)"/>
+
+    </changeSet>
+</databaseChangeLog>

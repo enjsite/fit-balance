@@ -15,6 +15,7 @@ import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.Workout;
+import ru.enjy.fit_balance.model.entity.WorkoutStatus;
 import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
 import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.repository.WorkoutRepository;
@@ -70,16 +71,19 @@ public class WorkoutServiceImpl implements WorkoutService {
             workout.setTitle("Workout " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         }
         workout.setCreated(LocalDateTime.now());
+        workout.setStatus(WorkoutStatus.IN_PROGRESS);
         workout.setActive(true);
         Workout resultWorkout = workoutRepository.save(workout);
         return workoutMapper.toWorkoutDto(resultWorkout);
     }
 
     private void closeAllUserActiveWorkout(Long userId) {
+        // искать не по активности, а по статусу
         var activeWorkouts = workoutRepository.findAllByActiveTrueAndUser_Id(userId);
         log.info("закрываем активные тренировки");
         activeWorkouts.forEach(workout -> {
             workout.setActive(false);
+            workout.setStatus(WorkoutStatus.COMPLETED);
             log.info("что-то найдено и закрыто " + workout.getTitle());
             workoutRepository.save(workout);
         });
@@ -145,6 +149,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     public WorkoutDto finishWorkout(WorkoutDto workoutDto) {
         var activeWorkout = workoutMapper.toEntity(workoutDto);
         activeWorkout.setActive(false);
+        activeWorkout.setStatus(WorkoutStatus.COMPLETED);
         workoutRepository.save(activeWorkout);
         return workoutMapper.toWorkoutDto(activeWorkout);
     }

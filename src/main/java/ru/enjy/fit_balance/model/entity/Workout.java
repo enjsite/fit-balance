@@ -37,6 +37,10 @@ public class Workout {
     @Column(name = "active")
     private Boolean active;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private WorkoutStatus status;
+
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
