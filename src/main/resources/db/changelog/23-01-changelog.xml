@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="2026-02-18-05-create-workout-session" author="fitli">
+
+        <comment>
+            Create workout_session table to store conversational state per user
+        </comment>
+
+        <!-- 1. Таблица -->
+        <createTable tableName="workout_session">
+
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="state" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="current_workout_id" type="BIGINT"/>
+
+            <column name="current_superset_id" type="BIGINT"/>
+
+            <column name="updated_at" type="TIMESTAMP"/>
+
+        </createTable>
+
+        <!-- 2. FK на workout -->
+        <addForeignKeyConstraint
+                baseTableName="workout_session"
+                baseColumnNames="current_workout_id"
+                constraintName="fk_ws_workout"
+                referencedTableName="workout"
+                referencedColumnNames="id"
+                onDelete="SET NULL"/>
+
+        <!-- 3. FK на superset -->
+        <addForeignKeyConstraint
+                baseTableName="workout_session"
+                baseColumnNames="current_superset_id"
+                constraintName="fk_ws_superset"
+                referencedTableName="superset"
+                referencedColumnNames="id"
+                onDelete="SET NULL"/>
+
+        <!-- 4. Индекс для быстрого поиска по user -->
+        <createIndex indexName="idx_ws_user_id"
+                     tableName="workout_session">
+            <column name="user_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>
