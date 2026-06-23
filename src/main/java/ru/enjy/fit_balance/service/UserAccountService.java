@@ -3,11 +3,14 @@ package ru.enjy.fit_balance.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
+import ru.enjy.fit_balance.model.entity.UserAccount;
 
 import java.io.IOException;
 import java.util.List;
 
+@Service
 public interface UserAccountService {
     Page<UserAccountDto> getAll(Pageable pageable);
 
@@ -17,6 +20,10 @@ public interface UserAccountService {
 
     UserAccountDto create(UserAccountDto dto);
 
+    UserAccountDto create(UserAccount userAccount);
+
+    UserAccountDto create(String chatId);
+
     UserAccountDto patch(Long id, JsonNode patchNode) throws IOException;
 
     List<Long> patchMany(List<Long> ids, JsonNode patchNode) throws IOException;
@@ -24,4 +31,8 @@ public interface UserAccountService {
     UserAccountDto delete(Long id);
 
     void deleteMany(List<Long> ids);
+
+    UserAccountDto findFirstByChatId(String chatId);
+
+    Boolean hasUserWithChatId(String chatId);
 }

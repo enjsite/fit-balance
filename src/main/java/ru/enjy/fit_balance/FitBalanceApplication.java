@@ -14,14 +14,14 @@ import javax.sql.DataSource;
 import java.util.Objects;
 
 @SpringBootApplication
-//@EnableJpaRepositories(entityManagerFactoryRef = "dataSourceEntityManagerFactory", transactionManagerRef = "dataSourceTransactionManager")
+@EnableJpaRepositories(entityManagerFactoryRef = "dataSourceEntityManagerFactory", transactionManagerRef = "dataSourceTransactionManager")
 public class FitBalanceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FitBalanceApplication.class, args);
 	}
 
-	/*@Bean
+	@Bean
 	public LocalContainerEntityManagerFactoryBean dataSourceEntityManagerFactory(
 			@Qualifier("dataSource") DataSource dataSource,
 			EntityManagerFactoryBuilder builder) {
@@ -36,5 +36,5 @@ public class FitBalanceApplication {
 	public PlatformTransactionManager dataSourceTransactionManager(
 			@Qualifier("dataSourceEntityManagerFactory") LocalContainerEntityManagerFactoryBean dataSourceEntityManagerFactory) {
 		return new JpaTransactionManager(Objects.requireNonNull(dataSourceEntityManagerFactory.getObject()));
-	}*/
+	}
 }

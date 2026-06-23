@@ -2,8 +2,10 @@ package ru.enjy.fit_balance.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Value;
+import ru.enjy.fit_balance.model.entity.WorkoutStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,6 +19,8 @@ public class WorkoutDto {
     String description;
     UserAccountDto user;
     Boolean pattern;
+    Boolean active;
+    WorkoutStatus status;
     LocalDateTime created;
-    Set<SupersetDto> supersets;
+    List<SupersetDto> supersets;
 }

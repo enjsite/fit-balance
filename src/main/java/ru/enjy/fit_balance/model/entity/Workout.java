@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -32,10 +34,16 @@ public class Workout {
     @Column(name = "pattern")
     private Boolean pattern;
 
+    @Column(name = "active")
+    private Boolean active;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private WorkoutStatus status;
+
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
     @OneToMany(mappedBy = "workout", orphanRemoval = true)
-    private Set<Superset> supersets = new LinkedHashSet<>();
-
+    private List<Superset> supersets = new ArrayList<>();
 }

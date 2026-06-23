@@ -1,9 +1,6 @@
 package ru.enjy.fit_balance.model.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import ru.enjy.fit_balance.model.dto.CategoryDto;
 import ru.enjy.fit_balance.model.entity.Category;
 

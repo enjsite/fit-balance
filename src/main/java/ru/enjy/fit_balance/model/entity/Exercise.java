@@ -3,6 +3,8 @@ package ru.enjy.fit_balance.model.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.LinkedHashSet;
@@ -27,6 +29,7 @@ public class Exercise {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "user_id")
     private UserAccount user;
 
@@ -37,7 +40,6 @@ public class Exercise {
     @JoinTable(name = "category_exercises",
             joinColumns = @JoinColumn(name = "exercise_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    //@ManyToMany(mappedBy = "exercises")
     private Set<Category> categories = new LinkedHashSet<>();
 
     @Override

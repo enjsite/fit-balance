@@ -9,18 +9,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import ru.enjy.fit_balance.model.dto.SetDto;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
+import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.model.entity.SetApproachType;
 import ru.enjy.fit_balance.model.entity.Superset;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.mapper.SupersetMapper;
 import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.repository.SupersetRepository;
 import ru.enjy.fit_balance.repository.WorkoutRepository;
+import ru.enjy.fit_balance.service.SetService;
 import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.WorkoutService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,16 +36,13 @@ import java.util.Optional;
 public class SupersetServiceImpl implements SupersetService {
 
     private final SupersetMapper supersetMapper;
+    private final ObjectMapper objectMapper;
+    private final WorkoutMapper workoutMapper;
 
     private final SupersetRepository supersetRepository;
-
-    private final ObjectMapper objectMapper;
-
-    private final WorkoutService workoutService;
-
     private final WorkoutRepository workoutRepository;
 
-    private final WorkoutMapper workoutMapper;
+    //private final SetService setService;
 
     @Override
     public Page<SupersetDto> getAll(Pageable pageable) {
@@ -65,8 +68,22 @@ public class SupersetServiceImpl implements SupersetService {
     @Override
     public SupersetDto create(SupersetDto dto) {
         Superset superset = supersetMapper.toEntity(dto);
-        Workout workout = workoutRepository.getReferenceById(dto.getWorkout_id());
+        Workout workout = workoutRepository.getReferenceById(dto.getWorkoutId());
+        return create(superset, workout);
+    }
+
+    @Override
+    public SupersetDto create(WorkoutDto workoutDto, SetApproachType type) {
+        Superset superset = new Superset();
+        superset.setType(type);
+        Workout workout = workoutMapper.toEntity(workoutDto);
+        return create(superset, workout);
+    }
+
+    private SupersetDto create(Superset superset, Workout workout) {
         superset.setWorkout(workout);
+        superset.setActive(true);
+        superset.setCreated(LocalDateTime.now());
         Superset resultSuperset = supersetRepository.save(superset);
         return supersetMapper.toSupersetDto(resultSuperset);
     }
@@ -112,5 +129,39 @@ public class SupersetServiceImpl implements SupersetService {
     @Override
     public void deleteMany(List<Long> ids) {
         supersetRepository.deleteAllById(ids);
+    }
+
+    @Override
+    public SupersetDto findFirstByActiveAndWorkout(Long workoutId) {
+        Optional<Superset> superset = supersetRepository.findFirstByActiveTrueAndWorkout_IdOrderByCreatedDesc(workoutId);
+        return superset.map(supersetMapper::toSupersetDto).orElse(null);
+    }
+
+    @Override
+    public SupersetDto findFirstByActiveAndWorkout(WorkoutDto workoutDto) {
+        Optional<Superset> activeSuperset = workoutMapper.toEntity(workoutDto).getSupersets().stream()
+                .filter(Superset::isActive)
+                .max(Comparator.comparing(Superset::getCreated))
+                .stream().findFirst();
+        return activeSuperset.map(supersetMapper::toSupersetDto).orElse(null);
+    }
+
+    @Override
+    public SupersetDto finishSuperset(SupersetDto dto) {
+        var superset = supersetMapper.toEntity(dto);
+        superset.setActive(false);
+        supersetRepository.save(superset);
+        return supersetMapper.toSupersetDto(superset);
+    }
+
+    @Override
+    public List<SetDto> getFilledSetsBySuperset(SupersetDto supersetDto) {
+        if (supersetDto == null || supersetDto.getSets() == null) {
+            return List.of();
+        }
+
+        return supersetDto.getSets().stream()
+                .filter(setDto -> setDto.getReps() != null && setDto.getReps() > 0)
+                .toList();
     }
 }

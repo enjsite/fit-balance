@@ -3,14 +3,17 @@ package ru.enjy.fit_balance.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.enjy.fit_balance.model.dto.ExerciseDto;
 import ru.enjy.fit_balance.model.entity.Category;
 import ru.enjy.fit_balance.model.entity.Exercise;
+import ru.enjy.fit_balance.model.entity.UserAccount;
 import ru.enjy.fit_balance.model.mapper.ExerciseMapper;
 import ru.enjy.fit_balance.repository.CategoryRepository;
 import ru.enjy.fit_balance.repository.ExerciseRepository;
@@ -19,8 +22,10 @@ import ru.enjy.fit_balance.service.ExerciseService;
 import java.io.IOException;
 import java.util.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class ExerciseServiceImpl implements ExerciseService {
 
     private final ExerciseMapper exerciseMapper;
@@ -40,6 +45,12 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
+    public List<ExerciseDto> getAll() {
+        List<Exercise> exercises = exerciseRepository.findAll();
+        return exercises.stream().map(exerciseMapper::toExerciseDto).toList();
+    }
+
+    @Override
     public ExerciseDto getOne(Long id) {
         Optional<Exercise> exerciseOptional = exerciseRepository.findById(id);
         return exerciseMapper.toExerciseDto(exerciseOptional.orElseThrow(() ->
@@ -55,9 +66,21 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
+    public Exercise create(String title, UserAccount user) {
+
+        Exercise exercise = new Exercise();
+        exercise.setTitle(title);
+        exercise.setUser(user);
+        System.out.println("Создаем упражнение " + exercise.getTitle() + " " + exercise.getId());
+        //List<Category> categoryList = categoryRepository.findAllById(dto.getCategoryIds());
+        //exercise.setCategories(new HashSet<>(categoryList));
+        return exerciseRepository.save(exercise);
+    }
+
+    @Override
     public ExerciseDto create(ExerciseDto dto) {
         Exercise exercise = exerciseMapper.toEntity(dto);
-        List<Category> categoryList = categoryRepository.findAllById(dto.getCategories_ids());
+        List<Category> categoryList = categoryRepository.findAllById(dto.getCategoryIds());
         exercise.setCategories(new HashSet<>(categoryList));
         Exercise resultExercise = exerciseRepository.save(exercise);
         return exerciseMapper.toExerciseDto(resultExercise);

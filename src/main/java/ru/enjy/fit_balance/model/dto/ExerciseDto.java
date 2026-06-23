@@ -15,8 +15,7 @@ public class ExerciseDto {
     Long id;
     String title;
     String description;
-    UserAccountDto user;
+    Long userId;
     String image;
-    //Set<CategoryDto> categories;
-    Set<Long> categories_ids;
+    Set<Long> categoryIds;
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="2026-02-18-03-unique-active-workout" author="fitli">
+
+        <comment>
+            Ensure only one IN_PROGRESS workout per user
+        </comment>
+
+        <sql>
+            CREATE UNIQUE INDEX IF NOT EXISTS ux_user_active_workout
+            ON workout(user_id)
+            WHERE status = 'IN_PROGRESS';
+        </sql>
+
+    </changeSet>
+</databaseChangeLog>

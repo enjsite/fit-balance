@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="1756902043841-1" author="enjyw (generated)">
+        <dropColumn columnName="number" tableName="set"/>
+    </changeSet>
+    <changeSet id="1756902043841-2" author="enjyw (generated)">
+        <dropColumn columnName="number" tableName="superset"/>
+    </changeSet>
+</databaseChangeLog>
