@@ -63,8 +63,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                 .toList();
     }
 
-    @Override
-    public WorkoutDto create(WorkoutDto dto) {
+    private Workout create(WorkoutDto dto) {
         closeAllUserActiveWorkout(dto.getUser().getId()); // завершаем все активные тренировки
         Workout workout = workoutMapper.toEntity(dto);
         if (workout.getTitle() == null) {
@@ -74,9 +73,10 @@ public class WorkoutServiceImpl implements WorkoutService {
         workout.setStatus(WorkoutStatus.IN_PROGRESS);
         workout.setActive(true);
         Workout resultWorkout = workoutRepository.save(workout);
-        return workoutMapper.toWorkoutDto(resultWorkout);
+        return resultWorkout;
     }
 
+    //to delete
     private void closeAllUserActiveWorkout(Long userId) {
         // искать не по активности, а по статусу
         var activeWorkouts = workoutRepository.findAllByActiveTrueAndUser_Id(userId);
@@ -90,7 +90,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public WorkoutDto create(UserAccountDto userAccountDto) {
+    public Workout create(UserAccountDto userAccountDto) {
         Workout workout = new Workout();
         workout.setUser(userAccountMapper.toEntity(userAccountDto));
         return create(workoutMapper.toWorkoutDto(workout));
@@ -143,6 +143,13 @@ public class WorkoutServiceImpl implements WorkoutService {
     public WorkoutDto findFirstByActiveTrueAndUserChatId(String chatId) {
         Optional<Workout> workout = workoutRepository.findFirstByActiveTrueAndUser_ChatIdLikeOrderByCreatedDesc(chatId);
         return workout.map(workoutMapper::toWorkoutDto).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<Workout> findInProgressWorkoutByUserId(Long userId) {
+        return workoutRepository
+                .findByStatusAndUser_Id(WorkoutStatus.IN_PROGRESS, userId);
     }
 
     @Override

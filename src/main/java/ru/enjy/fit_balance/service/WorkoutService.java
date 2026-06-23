@@ -6,9 +6,11 @@ import org.springframework.data.domain.Pageable;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.model.entity.Workout;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface WorkoutService {
     Page<WorkoutDto> getAll(Pageable pageable);
@@ -17,9 +19,9 @@ public interface WorkoutService {
 
     List<WorkoutDto> getMany(List<Long> ids);
 
-    WorkoutDto create(WorkoutDto dto);
+    //WorkoutDto create(WorkoutDto dto);
 
-    WorkoutDto create(UserAccountDto userAccountDto);
+    Workout create(UserAccountDto userAccountDto);
 
     WorkoutDto patch(Long id, JsonNode patchNode) throws IOException;
 
@@ -30,6 +32,8 @@ public interface WorkoutService {
     void deleteMany(List<Long> ids);
 
     WorkoutDto findFirstByActiveTrueAndUserChatId(String chatId);
+
+    Optional<Workout> findInProgressWorkoutByUserId(Long userId);
 
     WorkoutDto finishWorkout(WorkoutDto workoutDto);
 

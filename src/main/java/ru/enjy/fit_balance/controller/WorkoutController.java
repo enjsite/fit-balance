@@ -6,7 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.*;
+import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.service.WorkoutService;
 
 import java.io.IOException;
@@ -18,6 +20,8 @@ import java.util.List;
 public class WorkoutController {
 
     private final WorkoutService workoutService;
+
+    private final WorkoutMapper workoutMapper;
 
     @GetMapping
     public PagedModel<WorkoutDto> getAll(Pageable pageable) {
@@ -36,8 +40,8 @@ public class WorkoutController {
     }
 
     @PostMapping
-    public WorkoutDto create(@RequestBody WorkoutDto dto) {
-        return workoutService.create(dto);
+    public WorkoutDto create(@RequestBody UserAccountDto dto) {
+        return workoutMapper.toWorkoutDto(workoutService.create(dto));
     }
 
     @PatchMapping("/{id}")

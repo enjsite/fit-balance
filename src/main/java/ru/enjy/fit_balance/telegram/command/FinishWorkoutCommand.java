@@ -4,9 +4,14 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
+import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.model.entity.WorkoutSession;
+import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
+import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
 import ru.enjy.fit_balance.service.report.WorkoutReportService;
+import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import java.util.List;
@@ -21,20 +26,37 @@ public class FinishWorkoutCommand implements Command {
 
     private final WorkoutReportService workoutReportService;
 
+    private final WorkoutSessionService workoutSessionService;
+
+    private final UserAccountService userAccountService;
+
+    private final UserAccountMapper userAccountMapper;
+
     public FinishWorkoutCommand(CommandContainer commandContainer,
                                 WorkoutService workoutService,
-                                WorkoutReportService workoutReportService) {
+                                WorkoutReportService workoutReportService,
+                                WorkoutSessionService workoutSessionService,
+                                UserAccountService userAccountService,
+                                UserAccountMapper userAccountMapper) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
         this.workoutReportService = workoutReportService;
+        this.workoutSessionService = workoutSessionService;
+        this.userAccountService = userAccountService;
+        this.userAccountMapper = userAccountMapper;
     }
 
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
         WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
+        UserAccountDto userAccountDto = userAccountService.findFirstByChatId(chatId.toString());
         if (activeWorkout != null) {
             workoutService.finishWorkout(activeWorkout);
+
+            // получаем сессию пользователя и чистим ее
+            WorkoutSession session = workoutSessionService.getOrRestore(userAccountDto.getId(), userAccountMapper.toEntity(userAccountDto));
+            workoutSessionService.clearSession(session);
         } else {
             updateConsumer.sendMessage(chatId, "Невозможно завершить тренировку - нет ни одной активной.");
         }

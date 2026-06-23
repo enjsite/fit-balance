@@ -39,13 +39,16 @@ public class StartSinglesetCommand implements Command {
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
+        //получить пользователя и его сессию и проверить hasInProgressWorkoutContext
+        //и если нет - отправить на начать тренировку
+
         WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
 
         if (activeWorkout != null) {
             //!!!
             // Добавить проверку - если активный суперсет уже существует, возможно мы зашли сюда, чтобы выбрать другое упражнение
             var superset = supersetService.create(activeWorkout, SetApproachType.SET);
-            var exercises = exerciseService.getAll();
+            /*var exercises = exerciseService.getAll();
             List<InlineKeyboardRow> exercisesButtons = new ArrayList<>();
             exercises.forEach(ex -> {
                 var button = InlineKeyboardButton.builder()
@@ -53,15 +56,27 @@ public class StartSinglesetCommand implements Command {
                         .callbackData("/ex" + ex.getId().toString())
                         .build();
                 exercisesButtons.add(new InlineKeyboardRow(button));
-            });
+            });*/
 
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")
                     .callbackData(FINISH_WORKOUT.getCommand())
                     .build();
-            exercisesButtons.add(new InlineKeyboardRow(button2));
+            /*exercisesButtons.add(new InlineKeyboardRow(button2));
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(exercisesButtons);
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Выберите упражнение:");
+            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Выберите упражнение:");*/
+
+
+            var button1 = InlineKeyboardButton.builder()
+                    .text("Отменить")
+                    .callbackData(START_SUPERSET.getCommand())
+                    .build();
+            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
+                    new InlineKeyboardRow(button1), new InlineKeyboardRow(button2))
+            );
+            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
+                    "Введите название упражения: ");
+
 
         } else {
             var button = InlineKeyboardButton.builder()

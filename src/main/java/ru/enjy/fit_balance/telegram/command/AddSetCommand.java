@@ -36,6 +36,7 @@ public class AddSetCommand implements Command {
         this.supersetService = supersetService;
         this.setService = setService;
 
+        // to do getAll только для этого юзера ?
         var exercises = exerciseService.getAll();
         exercises.forEach(exercise ->
                 commandContainer.setCommandMap("/ex" + exercise.getId().toString(), this));

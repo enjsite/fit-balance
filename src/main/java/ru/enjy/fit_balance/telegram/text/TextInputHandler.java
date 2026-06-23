@@ -7,19 +7,22 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.SetDto;
-import ru.enjy.fit_balance.model.entity.SetApproachType;
+import ru.enjy.fit_balance.model.dto.UserAccountDto;
+import ru.enjy.fit_balance.model.entity.*;
 import ru.enjy.fit_balance.model.mapper.SetMapper;
-import ru.enjy.fit_balance.service.ExerciseService;
-import ru.enjy.fit_balance.service.SetService;
-import ru.enjy.fit_balance.service.SupersetService;
-import ru.enjy.fit_balance.service.WorkoutService;
+import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
+import ru.enjy.fit_balance.repository.ExerciseRepository;
+import ru.enjy.fit_balance.service.*;
+import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.service.state.WorkoutInputState;
 import ru.enjy.fit_balance.service.state.WorkoutStateService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
+import ru.enjy.fit_balance.telegram.command.Command;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 
@@ -39,23 +42,63 @@ public class TextInputHandler {
     private final SupersetService supersetService;
     private final SetService setService;
 
+    private final UserAccountService userAccountService;
+
+    private final WorkoutSessionService workoutSessionService;
+
+    private final UserAccountMapper userAccountMapper;
+
+    private final ExerciseRepository exerciseRepository;
+
     public void handle(UpdateConsumer updateConsumer, Long chatId, String message) {
 
-        WorkoutInputState state = stateService.getState(chatId.toString());
+        UserAccountDto userAccountDto = userAccountService.findFirstByChatId(chatId.toString()); // to do сразу получать не dto
+        UserAccount userAccount = userAccountMapper.toEntity(userAccountDto);
+        WorkoutSession session = workoutSessionService.getOrRestore(userAccountDto.getId(), userAccount);
+
+        log.info(session.getState().toString());
+        switch (session.getState()) {
+            case WAITING_EXERCISE_NAME -> processExerciseInput(updateConsumer, message, userAccount, session);
+            case WAITING_REPS -> processRepsInput(updateConsumer, message, chatId, userAccount, session);
+            case WAITING_WEIGHT -> processWeightInput(updateConsumer, message, chatId, userAccount, session);
+            default -> updateConsumer.sendMessage(chatId, "Неожиданный ввод: " + message);
+        }
+
+        /*WorkoutInputState state = stateService.getState(chatId.toString());
         log.info(state.toString());
         switch (state) {
             case WAITING_FOR_REPS -> processRepsInput(updateConsumer, message, chatId);
             case WAITING_FOR_WEIGHT -> processWeightInput(updateConsumer, message, chatId);
             default -> updateConsumer.sendMessage(chatId, "Неожиданный ввод: " + message);
-        }
+        }*/
     }
 
-    private void processRepsInput(UpdateConsumer updateConsumer, String input, Long chatId) {
+    private void processExerciseInput(UpdateConsumer updateConsumer, String message, UserAccount user, WorkoutSession session) {
+
+        Exercise exercise;
+        // to do искать с учетом user id
+        Optional<Exercise> existing = exerciseRepository.findFirstByTitleIgnoreCase(message);
+
+        exercise = existing.orElseGet(() -> exerciseService.create(message, user));
+        System.out.println("processExerciseInput ввели название упражнения и устанавливаем WAITING_WEIGHT");
+        workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT);
+
+        // вызываем ADD_SET.getCommand()
+        var command = commandContainer.getCommand(ADD_SET.getCommand());
+        command.execute(updateConsumer, Long.parseLong(user.getChatId()), exercise.getId());
+    }
+
+    private Command getCommand(String command) {
+        return commandContainer.getCommand(command);
+    }
+
+    private void processRepsInput(UpdateConsumer updateConsumer, String input, Long chatId, UserAccount user, WorkoutSession session) {
 
         SetDto activeSet = setService.findFirstByActiveAndChatId(chatId.toString());
         try {
             int reps = Integer.parseInt(input);
             setService.saveReps(activeSet, reps);
+            System.out.println("processRepsInput сохраняем число повторов, а какой статус дальше тут установить?");
             updateConsumer.sendMessage(chatId, "Сохранил " + reps + " повторов ✅");
 
             var button1 = InlineKeyboardButton.builder()
@@ -88,7 +131,12 @@ public class TextInputHandler {
                 // вместо выбора упражнения достаем exerciseId из activeSet и вызываем команду AddSet с ex{exerciseId}
                 // автоматический переброс на то же упражнение нужен ли?
                 // Наверно нужна кнопка Еще подход? и Закончить сет
+
+                // что лежит в сессии? какой статус? exId?
                 var exerciseId = activeSet.getExercise().getId();
+                System.out.println("что лежит в сессии? какой статус? exId? " + exerciseId);
+                // как сделать еще подход с тем же упраженением? возможно ли это в моей текущей парадигме?
+
                 var button0 = InlineKeyboardButton.builder()
                         .text("Еще подход")
                         .callbackData("/ex" + exerciseId)
@@ -110,7 +158,7 @@ public class TextInputHandler {
         }
     }
 
-    private void processWeightInput(UpdateConsumer updateConsumer, String input, Long chatId) {
+    private void processWeightInput(UpdateConsumer updateConsumer, String input, Long chatId, UserAccount user, WorkoutSession session) {
 
         SetDto activeSet = setService.findFirstByActiveAndChatId(chatId.toString());
         try {
@@ -128,6 +176,9 @@ public class TextInputHandler {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                 new InlineKeyboardRow(button1))
         );
+
+        System.out.println("processWeightInput ввели вес и устанавливаем WAITING_REPS");
+        workoutSessionService.updateState(session, SessionState.WAITING_REPS);
         updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Введите число повторов, например: 12");
 
     }

@@ -1,12 +1,20 @@
 package ru.enjy.fit_balance.telegram.command;
 
+import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
+import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.model.entity.Workout;
+import ru.enjy.fit_balance.model.entity.WorkoutSession;
+import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
+import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
+import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import java.util.List;
@@ -19,20 +27,46 @@ public class StartWorkoutCommand implements Command {
     private final CommandName command = START_WORKOUT;
     private final WorkoutService workoutService;
     private final UserAccountService userAccountService;
+    private final WorkoutSessionService workoutSessionService;
+
+    private final UserAccountMapper userAccountMapper;
+
+    private final WorkoutMapper workoutMapper;
 
     public StartWorkoutCommand(CommandContainer commandContainer,
                                WorkoutService workoutService,
-                               UserAccountService userAccountService) {
+                               UserAccountService userAccountService,
+                               WorkoutSessionService workoutSessionService,
+                               UserAccountMapper userAccountMapper,
+                               WorkoutMapper workoutMapper) {
         commandContainer.setCommandMap(this);
         this.workoutService = workoutService;
         this.userAccountService = userAccountService;
+        this.workoutSessionService = workoutSessionService;
+        this.userAccountMapper = userAccountMapper;
+        this.workoutMapper = workoutMapper;
     }
 
     @Override
+    @Transactional
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
         UserAccountDto userAccountDto = userAccountService.findFirstByChatId(chatId.toString());
-        var workout = workoutService.create(userAccountDto);
+        Workout workout;
+
+        // получаем сессию пользователя
+        WorkoutSession session = workoutSessionService.getOrCreate(userAccountDto.getId(), userAccountMapper.toEntity(userAccountDto));
+
+        if (!workoutSessionService.hasInProgressWorkoutContext(session)) {
+            workout = workoutService.create(userAccountDto);
+        } else {
+            workout = workoutService.findInProgressWorkoutByUserId(userAccountDto.getId())
+                    .orElseThrow(() ->
+                            new IllegalStateException("Active workout expected"));
+        }
+
+        workoutSessionService.attachWorkout(session, workout);
+
 
         var button0 = InlineKeyboardButton.builder()
                 .text("Начать сет")

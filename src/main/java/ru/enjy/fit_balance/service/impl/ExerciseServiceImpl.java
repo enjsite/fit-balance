@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.enjy.fit_balance.model.dto.ExerciseDto;
 import ru.enjy.fit_balance.model.entity.Category;
 import ru.enjy.fit_balance.model.entity.Exercise;
+import ru.enjy.fit_balance.model.entity.UserAccount;
 import ru.enjy.fit_balance.model.mapper.ExerciseMapper;
 import ru.enjy.fit_balance.repository.CategoryRepository;
 import ru.enjy.fit_balance.repository.ExerciseRepository;
@@ -62,6 +63,18 @@ public class ExerciseServiceImpl implements ExerciseService {
         return exercises.stream()
                 .map(exerciseMapper::toExerciseDto)
                 .toList();
+    }
+
+    @Override
+    public Exercise create(String title, UserAccount user) {
+
+        Exercise exercise = new Exercise();
+        exercise.setTitle(title);
+        exercise.setUser(user);
+        System.out.println("Создаем упражнение " + exercise.getTitle() + " " + exercise.getId());
+        //List<Category> categoryList = categoryRepository.findAllById(dto.getCategoryIds());
+        //exercise.setCategories(new HashSet<>(categoryList));
+        return exerciseRepository.save(exercise);
     }
 
     @Override

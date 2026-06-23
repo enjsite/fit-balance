@@ -70,6 +70,7 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
             }
 
             var command = getCommand(message);
+            System.out.println("команда " + message);
             if (command != null) {
                 command.execute(this, chatId, exerciseId);
             } else {
