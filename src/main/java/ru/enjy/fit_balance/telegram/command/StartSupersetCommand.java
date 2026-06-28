@@ -1,5 +1,8 @@
 package ru.enjy.fit_balance.telegram.command;
 
+import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -7,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.SetApproachType;
+import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.service.ExerciseService;
 import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.WorkoutService;
@@ -19,21 +23,19 @@ import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class StartSupersetCommand implements Command {
 
     private final CommandName command = START_SUPERSET;
-    private WorkoutService workoutService;
-    private SupersetService supersetService;
-    private ExerciseService exerciseService;
+    private final WorkoutService workoutService;
+    private final SupersetService supersetService;
+    private final ExerciseService exerciseService;
+    private final WorkoutMapper workoutMapper;
+    private final CommandContainer commandContainer;
 
-    public StartSupersetCommand(CommandContainer commandContainer,
-                                WorkoutService workoutService,
-                                SupersetService supersetService,
-                                ExerciseService exerciseService) {
+    @PostConstruct
+    public void init() {
         commandContainer.setCommandMap(this);
-        this.workoutService = workoutService;
-        this.supersetService = supersetService;
-        this.exerciseService = exerciseService;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class StartSupersetCommand implements Command {
         if (activeWorkout != null) {
             //!!!
             // Добавить проверку - если активный суперсет уже существует, возможно мы зашли сюда, чтобы выбрать другое упражнение
-            var superset = supersetService.create(activeWorkout, SetApproachType.SUPERSET);
+            var superset = supersetService.create(workoutMapper.toEntity(activeWorkout), SetApproachType.SUPERSET);
             var exercises = exerciseService.getAll();
             List<InlineKeyboardRow> exercisesButtons = new ArrayList<>();
             exercises.forEach(ex -> {

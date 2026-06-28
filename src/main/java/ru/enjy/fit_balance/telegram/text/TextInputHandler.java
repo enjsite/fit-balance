@@ -81,7 +81,8 @@ public class TextInputHandler {
 
         exercise = existing.orElseGet(() -> exerciseService.create(message, user));
         System.out.println("processExerciseInput ввели название упражнения и устанавливаем WAITING_WEIGHT");
-        workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT);
+        //workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT);
+        workoutSessionService.attachExercise(session, exercise);
 
         // вызываем ADD_SET.getCommand()
         var command = commandContainer.getCommand(ADD_SET.getCommand());
@@ -100,6 +101,8 @@ public class TextInputHandler {
             setService.saveReps(activeSet, reps);
             System.out.println("processRepsInput сохраняем число повторов, а какой статус дальше тут установить?");
             updateConsumer.sendMessage(chatId, "Сохранил " + reps + " повторов ✅");
+
+            workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT); // или ввод упражнения? когда ожидается ввод упражнения?
 
             var button1 = InlineKeyboardButton.builder()
                     .text("Закончить сет")
@@ -139,8 +142,14 @@ public class TextInputHandler {
 
                 var button0 = InlineKeyboardButton.builder()
                         .text("Еще подход")
-                        .callbackData("/ex" + exerciseId)
+                        //.callbackData("/ex" + exerciseId)
+                        .callbackData(ADD_SET.getCommand())
+                        // переходим на add_set без ожидания ввода названия упражнения
                         .build();
+
+                // вызываем ADD_SET.getCommand()
+                //var command = commandContainer.getCommand(ADD_SET.getCommand());
+                //command.execute(updateConsumer, Long.parseLong(user.getChatId()), exercise.getId());
 
                 InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                         new InlineKeyboardRow(button0),

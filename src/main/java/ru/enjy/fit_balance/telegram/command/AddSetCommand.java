@@ -1,16 +1,21 @@
 package ru.enjy.fit_balance.telegram.command;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
+import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
-import ru.enjy.fit_balance.service.ExerciseService;
-import ru.enjy.fit_balance.service.SetService;
-import ru.enjy.fit_balance.service.SupersetService;
-import ru.enjy.fit_balance.service.WorkoutService;
+import ru.enjy.fit_balance.model.entity.Superset;
+import ru.enjy.fit_balance.model.entity.Workout;
+import ru.enjy.fit_balance.model.entity.WorkoutSession;
+import ru.enjy.fit_balance.model.mapper.SupersetMapper;
+import ru.enjy.fit_balance.service.*;
+import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import java.util.List;
@@ -19,41 +24,77 @@ import static ru.enjy.fit_balance.telegram.command.CommandName.START_SUPERSET;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AddSetCommand implements Command {
 
     private final CommandName command = CommandName.ADD_SET;
-    private WorkoutService workoutService;
-    private SupersetService supersetService;
-    private SetService setService;
+    private final WorkoutService workoutService;
+    private final SupersetService supersetService;
+    private final SetService setService;
+    private final ExerciseService exerciseService;
+    private final UserAccountService userAccountService;
+    private final CommandContainer commandContainer;
+    private final WorkoutSessionService workoutSessionService;
+    private final SupersetMapper supersetMapper;
 
-    public AddSetCommand(CommandContainer commandContainer,
-                         WorkoutService workoutService,
-                         SupersetService supersetService,
-                         SetService setService,
-                         ExerciseService exerciseService) {
+    @PostConstruct
+    public void init() {
         commandContainer.setCommandMap(this);
-        this.workoutService = workoutService;
-        this.supersetService = supersetService;
-        this.setService = setService;
 
+        // точно ли это надо?
         // to do getAll только для этого юзера ?
         var exercises = exerciseService.getAll();
         exercises.forEach(exercise ->
                 commandContainer.setCommandMap("/ex" + exercise.getId().toString(), this));
     }
 
+//    public AddSetCommand(CommandContainer commandContainer,
+//                         WorkoutService workoutService,
+//                         SupersetService supersetService,
+//                         SetService setService,
+//                         ExerciseService exerciseService) {
+//        commandContainer.setCommandMap(this);
+//        this.workoutService = workoutService;
+//        this.supersetService = supersetService;
+//        this.setService = setService;
+//
+//        // to do getAll только для этого юзера ?
+//        var exercises = exerciseService.getAll();
+//        exercises.forEach(exercise ->
+//                commandContainer.setCommandMap("/ex" + exercise.getId().toString(), this));
+//    }
+
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
-        WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
-        SupersetDto activeSuperset = null;
-        if (activeWorkout != null) {
-            activeSuperset = supersetService.findFirstByActiveAndWorkout(activeWorkout);
+        // получить сессию, воркаут, суперсет и exerciseId - достать из сессии, если не передано.
+        UserAccountDto userAccountDto = userAccountService.findFirstByChatId(chatId.toString());
+        WorkoutSession session = workoutSessionService.getRequired(userAccountDto.getId());
+        Workout currentWorkout = session.getCurrentWorkout();
+
+        if (exerciseId == null) {
+            System.out.println("exercise не передан ");
+            exerciseId = session.getCurrentExercise().getId();
+            // должно ли быть создание подхода командой, если каждый раз оно вызывается напрямую через execute
         }
 
-        if (activeSuperset != null) {
+        //WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
+        Superset currentSuperset = null;
+        if (currentWorkout != null) {
+            // суперсет будет тот же и мы должны достать его из сессии
+            //currentSuperset = supersetService.findFirstByActiveAndWorkout(currentWorkout);
+            currentSuperset = session.getCurrentSuperset();
+        } else {
+            // предложить начать workout
+        }
+        System.out.println("Зашли в AddSetCommand а что здесь дальше?");
 
-            var exerciseSet = setService.create(activeSuperset, exerciseId);
+        if (currentSuperset != null) { // здесь надо убедиться, что при завершении суперсета корректно сбросили его в сессии
+
+            // убрать дто
+            //var supersetDto = supersetMapper.toSupersetDto(currentSuperset);
+            var exerciseSet = setService.create(currentSuperset, exerciseId);
+            System.out.println("какой статус у сессии? " + session.getState());
 
             var button1 = InlineKeyboardButton.builder()
                     .text("Отменить")

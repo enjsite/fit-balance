@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="add-current-exercise-id-to-workout-session" author="enjsite">
+        <comment>Add current_exercise_id column to workout_session table to track the exercise being worked on</comment>
+
+        <!-- Добавляем колонку -->
+        <addColumn tableName="workout_session">
+            <column name="current_exercise_id" type="BIGINT">
+                <constraints
+                        nullable="true"
+                        foreignKeyName="fk_workout_session_current_exercise"
+                        references="exercise(id)"
+                        deleteCascade="false"/>
+            </column>
+        </addColumn>
+
+        <!-- Добавляем индекс для быстрого поиска по текущему упражнению -->
+        <createIndex tableName="workout_session" indexName="idx_workout_session_current_exercise">
+            <column name="current_exercise_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

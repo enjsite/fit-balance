@@ -73,11 +73,10 @@ public class SupersetServiceImpl implements SupersetService {
     }
 
     @Override
-    public SupersetDto create(WorkoutDto workoutDto, SetApproachType type) {
+    public Superset create(Workout workout, SetApproachType type) {
         Superset superset = new Superset();
         superset.setType(type);
-        Workout workout = workoutMapper.toEntity(workoutDto);
-        return create(superset, workout);
+        return supersetMapper.toEntity(create(superset, workout));
     }
 
     private SupersetDto create(Superset superset, Workout workout) {

@@ -7,6 +7,7 @@ import ru.enjy.fit_balance.model.dto.SetDto;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.Set;
+import ru.enjy.fit_balance.model.entity.Superset;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,7 +21,7 @@ public interface SetService {
 
     SetDto create(SetDto dto);
 
-    SetDto create(SupersetDto supersetDto, Long exerciseId);
+    SetDto create(Superset superset, Long exerciseId);
 
     SetDto patch(Long id, JsonNode patchNode) throws IOException;
 

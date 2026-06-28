@@ -77,11 +77,11 @@ public class SetServiceImpl implements SetService {
     }
 
     @Override
-    public SetDto create(SupersetDto supersetDto, Long exerciseId) {
+    public SetDto create(Superset superset, Long exerciseId) {
         Set set = new Set();
         Exercise exercise = exerciseMapper.toEntity(exerciseService.getOne(exerciseId));
         set.setExercise(exercise);
-        Superset superset = supersetMapper.toEntity(supersetDto);
+        //Superset superset = supersetMapper.toEntity(supersetDto);
         return create(set, superset);
     }
 

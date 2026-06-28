@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
+@ToString(exclude = {"currentExercise", "user", "currentWorkout", "currentSuperset"})
 @Table(
         name = "workout_session",
         uniqueConstraints = {
@@ -41,6 +43,10 @@ public class WorkoutSession {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_superset_id")
     private Superset currentSuperset;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "current_exercise_id")
+    private Exercise currentExercise;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
