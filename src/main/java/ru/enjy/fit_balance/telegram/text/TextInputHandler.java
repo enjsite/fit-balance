@@ -35,7 +35,6 @@ public class TextInputHandler {
     private final CommandContainer commandContainer;
 
     private final SetMapper setMapper;
-
     private final WorkoutStateService stateService;
     private final WorkoutService workoutService;
     private final ExerciseService exerciseService;
@@ -43,11 +42,8 @@ public class TextInputHandler {
     private final SetService setService;
 
     private final UserAccountService userAccountService;
-
     private final WorkoutSessionService workoutSessionService;
-
     private final UserAccountMapper userAccountMapper;
-
     private final ExerciseRepository exerciseRepository;
 
     public void handle(UpdateConsumer updateConsumer, Long chatId, String message) {
@@ -63,14 +59,6 @@ public class TextInputHandler {
             case WAITING_WEIGHT -> processWeightInput(updateConsumer, message, chatId, userAccount, session);
             default -> updateConsumer.sendMessage(chatId, "Неожиданный ввод: " + message);
         }
-
-        /*WorkoutInputState state = stateService.getState(chatId.toString());
-        log.info(state.toString());
-        switch (state) {
-            case WAITING_FOR_REPS -> processRepsInput(updateConsumer, message, chatId);
-            case WAITING_FOR_WEIGHT -> processWeightInput(updateConsumer, message, chatId);
-            default -> updateConsumer.sendMessage(chatId, "Неожиданный ввод: " + message);
-        }*/
     }
 
     private void processExerciseInput(UpdateConsumer updateConsumer, String message, UserAccount user, WorkoutSession session) {
@@ -81,7 +69,8 @@ public class TextInputHandler {
 
         exercise = existing.orElseGet(() -> exerciseService.create(message, user));
         System.out.println("processExerciseInput ввели название упражнения и устанавливаем WAITING_WEIGHT");
-        workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT);
+
+        workoutSessionService.attachExercise(session, exercise);
 
         // вызываем ADD_SET.getCommand()
         var command = commandContainer.getCommand(ADD_SET.getCommand());
@@ -101,60 +90,48 @@ public class TextInputHandler {
             System.out.println("processRepsInput сохраняем число повторов, а какой статус дальше тут установить?");
             updateConsumer.sendMessage(chatId, "Сохранил " + reps + " повторов ✅");
 
-            var button1 = InlineKeyboardButton.builder()
-                    .text("Закончить сет")
-                    .callbackData(FINISH_SUPERSET.getCommand())
-                    .build();
-            var button2 = InlineKeyboardButton.builder()
-                    .text("Закончить тренировку")
-                    .callbackData(FINISH_WORKOUT.getCommand())
-                    .build();
-
-            var activeSuperset = supersetService.getOne(activeSet.getSupersetId());
-            if (activeSuperset.getType().equals(SetApproachType.SUPERSET)) {
-                var exercises = exerciseService.getAll();
-                List<InlineKeyboardRow> exercisesButtons = new ArrayList<>();
-                exercises.forEach(ex -> {
-                    var button = InlineKeyboardButton.builder()
-                            .text(ex.getTitle())
-                            .callbackData("/ex" + ex.getId().toString())
-                            .build();
-                    exercisesButtons.add(new InlineKeyboardRow(button));
-                });
-
-                exercisesButtons.add(new InlineKeyboardRow(button1));
-                exercisesButtons.add(new InlineKeyboardRow(button2));
-                InlineKeyboardMarkup markup = new InlineKeyboardMarkup(exercisesButtons);
-
-                updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Выберите упражнение:");
-            } else {
-                // вместо выбора упражнения достаем exerciseId из activeSet и вызываем команду AddSet с ex{exerciseId}
-                // автоматический переброс на то же упражнение нужен ли?
-                // Наверно нужна кнопка Еще подход? и Закончить сет
-
-                // что лежит в сессии? какой статус? exId?
-                var exerciseId = activeSet.getExercise().getId();
-                System.out.println("что лежит в сессии? какой статус? exId? " + exerciseId);
-                // как сделать еще подход с тем же упраженением? возможно ли это в моей текущей парадигме?
-
-                var button0 = InlineKeyboardButton.builder()
-                        .text("Еще подход")
-                        .callbackData("/ex" + exerciseId)
-                        .build();
-
-                InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
-                        new InlineKeyboardRow(button0),
-                        new InlineKeyboardRow(button1),
-                        new InlineKeyboardRow(button2)));
-
-                updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Что дальше?");
-                //var command = commandContainer.getCommand("/ex" + exerciseId);
-                //command.execute(updateConsumer, chatId, exerciseId);
-            }
-
-
         } catch (NumberFormatException e) {
             updateConsumer.sendMessage(chatId, "Введите число повторов, например: 12");
+        }
+
+        var button1 = InlineKeyboardButton.builder()
+                .text("Закончить сет")
+                .callbackData(FINISH_SUPERSET.getCommand())
+                .build();
+        var button2 = InlineKeyboardButton.builder()
+                .text("Закончить тренировку")
+                .callbackData(FINISH_WORKOUT.getCommand())
+                .build();
+
+        var activeSuperset = supersetService.getOne(activeSet.getSupersetId());
+
+        if (activeSuperset.getType().equals(SetApproachType.SUPERSET)) {
+
+            workoutSessionService.updateState(session, SessionState.WAITING_EXERCISE_NAME);
+            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
+                    new InlineKeyboardRow(button1), new InlineKeyboardRow(button2))
+            );
+            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
+                    "Введите название упражения: ");
+
+        } else {
+
+            workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT); // или ввод упражнения? когда ожидается ввод упражнения?
+            // вместо выбора упражнения достаем exerciseId из activeSet и вызываем команду AddSet с ex{exerciseId}
+
+            var button0 = InlineKeyboardButton.builder()
+                    .text("Еще подход")
+                    //.callbackData("/ex" + exerciseId)
+                    .callbackData(ADD_SET.getCommand())
+                    // переходим на add_set без ожидания ввода названия упражнения
+                    .build();
+
+            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
+                    new InlineKeyboardRow(button0),
+                    new InlineKeyboardRow(button1),
+                    new InlineKeyboardRow(button2)));
+
+            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Что дальше?");
         }
     }
 
@@ -180,6 +157,5 @@ public class TextInputHandler {
         System.out.println("processWeightInput ввели вес и устанавливаем WAITING_REPS");
         workoutSessionService.updateState(session, SessionState.WAITING_REPS);
         updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Введите число повторов, например: 12");
-
     }
 }

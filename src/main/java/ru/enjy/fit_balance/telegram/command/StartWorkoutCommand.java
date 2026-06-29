@@ -1,6 +1,9 @@
 package ru.enjy.fit_balance.telegram.command;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -21,30 +24,23 @@ import java.util.List;
 
 import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class StartWorkoutCommand implements Command {
 
     private final CommandName command = START_WORKOUT;
     private final WorkoutService workoutService;
     private final UserAccountService userAccountService;
     private final WorkoutSessionService workoutSessionService;
-
     private final UserAccountMapper userAccountMapper;
 
     private final WorkoutMapper workoutMapper;
+    private final CommandContainer commandContainer;
 
-    public StartWorkoutCommand(CommandContainer commandContainer,
-                               WorkoutService workoutService,
-                               UserAccountService userAccountService,
-                               WorkoutSessionService workoutSessionService,
-                               UserAccountMapper userAccountMapper,
-                               WorkoutMapper workoutMapper) {
+    @PostConstruct
+    public void init() {
         commandContainer.setCommandMap(this);
-        this.workoutService = workoutService;
-        this.userAccountService = userAccountService;
-        this.workoutSessionService = workoutSessionService;
-        this.userAccountMapper = userAccountMapper;
-        this.workoutMapper = workoutMapper;
     }
 
     @Override
@@ -66,7 +62,6 @@ public class StartWorkoutCommand implements Command {
         }
 
         workoutSessionService.attachWorkout(session, workout);
-
 
         var button0 = InlineKeyboardButton.builder()
                 .text("Начать сет")

@@ -7,6 +7,8 @@ import ru.enjy.fit_balance.model.dto.SetDto;
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.SetApproachType;
+import ru.enjy.fit_balance.model.entity.Superset;
+import ru.enjy.fit_balance.model.entity.Workout;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,7 +22,7 @@ public interface SupersetService {
 
     SupersetDto create(SupersetDto dto);
 
-    SupersetDto create(WorkoutDto workoutDto, SetApproachType type);
+    Superset create(Workout workout, SetApproachType type);
 
     SupersetDto patch(Long id, JsonNode patchNode) throws IOException;
 

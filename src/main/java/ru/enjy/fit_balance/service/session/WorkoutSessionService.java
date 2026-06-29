@@ -116,6 +116,17 @@ public class WorkoutSessionService {
     @Transactional
     public void attachSuperset(WorkoutSession session, Superset superset) {
         session.setCurrentSuperset(superset);
+        session.setState(SessionState.WAITING_EXERCISE_NAME);
+        sessionRepository.save(session);
+    }
+
+    /**
+     * Привязать текущий superset
+     */
+    @Transactional
+    public void attachExercise(WorkoutSession session, Exercise exercise) {
+        session.setCurrentExercise(exercise);
+        session.setState(SessionState.WAITING_WEIGHT);
         sessionRepository.save(session);
     }
 
@@ -126,6 +137,7 @@ public class WorkoutSessionService {
     public void clearSession(WorkoutSession session) {
         session.setCurrentWorkout(null);
         session.setCurrentSuperset(null);
+        session.setCurrentExercise(null);
         session.setState(SessionState.IDLE);
         sessionRepository.save(session);
     }
