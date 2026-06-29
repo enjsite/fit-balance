@@ -137,6 +137,7 @@ public class WorkoutSessionService {
     public void clearSession(WorkoutSession session) {
         session.setCurrentWorkout(null);
         session.setCurrentSuperset(null);
+        session.setCurrentExercise(null);
         session.setState(SessionState.IDLE);
         sessionRepository.save(session);
     }

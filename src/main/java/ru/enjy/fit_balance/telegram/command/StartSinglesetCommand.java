@@ -66,25 +66,10 @@ public class StartSinglesetCommand implements Command {
             workoutSessionService.attachSuperset(session, currentSuperset);
             System.out.println("in StartSinglesetCommand добавила суперсет и ставлю ожидание ввода названия упражнения хотя он и так может уже стоять " + session.getState());
 
-
-            /*var exercises = exerciseService.getAll();
-            List<InlineKeyboardRow> exercisesButtons = new ArrayList<>();
-            exercises.forEach(ex -> {
-                var button = InlineKeyboardButton.builder()
-                        .text(ex.getTitle())
-                        .callbackData("/ex" + ex.getId().toString())
-                        .build();
-                exercisesButtons.add(new InlineKeyboardRow(button));
-            });*/
-
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")
                     .callbackData(FINISH_WORKOUT.getCommand())
                     .build();
-            /*exercisesButtons.add(new InlineKeyboardRow(button2));
-            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(exercisesButtons);
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Выберите упражнение:");*/
-
 
             var button1 = InlineKeyboardButton.builder()
                     .text("Отменить")
