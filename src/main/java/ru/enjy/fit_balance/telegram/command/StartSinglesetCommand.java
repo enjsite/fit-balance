@@ -19,6 +19,7 @@ import ru.enjy.fit_balance.service.ExerciseService;
 import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
+import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
@@ -40,6 +41,7 @@ public class StartSinglesetCommand implements Command {
     private final WorkoutSessionService workoutSessionService;
     private final UserAccountMapper userAccountMapper;
     private final CommandContainer commandContainer;
+    private final WorkoutReportService workoutReportService;
 
     @PostConstruct
     public void init() {
@@ -48,6 +50,8 @@ public class StartSinglesetCommand implements Command {
 
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
+
+        System.out.println("StartSinglesetCommand");
 
         //получить пользователя и его сессию и проверить hasInProgressWorkoutContext
         //и если нет - отправить на начать тренировку
@@ -78,6 +82,8 @@ public class StartSinglesetCommand implements Command {
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                     new InlineKeyboardRow(button1), new InlineKeyboardRow(button2))
             );
+
+            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));
             updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
                     "Введите название упражения: ");
 
