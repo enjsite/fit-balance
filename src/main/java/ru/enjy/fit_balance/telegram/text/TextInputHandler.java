@@ -13,6 +13,7 @@ import ru.enjy.fit_balance.model.mapper.SetMapper;
 import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
 import ru.enjy.fit_balance.repository.ExerciseRepository;
 import ru.enjy.fit_balance.service.*;
+import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.service.state.WorkoutInputState;
 import ru.enjy.fit_balance.service.state.WorkoutStateService;
@@ -45,6 +46,7 @@ public class TextInputHandler {
     private final WorkoutSessionService workoutSessionService;
     private final UserAccountMapper userAccountMapper;
     private final ExerciseRepository exerciseRepository;
+    private final WorkoutReportService workoutReportService;
 
     public void handle(UpdateConsumer updateConsumer, Long chatId, String message) {
 
@@ -88,6 +90,8 @@ public class TextInputHandler {
             int reps = Integer.parseInt(input);
             setService.saveReps(activeSet, reps);
             System.out.println("processRepsInput сохраняем число повторов, а какой статус дальше тут установить?");
+
+            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(session.getCurrentWorkout().getId()));
             updateConsumer.sendMessage(chatId, "Сохранил " + reps + " повторов ✅");
 
         } catch (NumberFormatException e) {
@@ -141,6 +145,8 @@ public class TextInputHandler {
         try {
             double weight = Double.parseDouble(input);
             setService.saveWeight(activeSet, weight);
+
+            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(session.getCurrentWorkout().getId()));
             updateConsumer.sendMessage(chatId, "Сохранил " + weight + " кг ✅");
         } catch (NumberFormatException e) {
             updateConsumer.sendMessage(chatId, "Введите рабочий вес (число или число с точкой, например: 80.5): ");

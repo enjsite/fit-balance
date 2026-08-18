@@ -1,5 +1,8 @@
 package ru.enjy.fit_balance.telegram.command;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -18,32 +21,23 @@ import java.util.List;
 
 import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class FinishWorkoutCommand implements Command {
 
     private final CommandName command = FINISH_WORKOUT;
     private final WorkoutService workoutService;
-
     private final WorkoutReportService workoutReportService;
-
     private final WorkoutSessionService workoutSessionService;
-
     private final UserAccountService userAccountService;
-
     private final UserAccountMapper userAccountMapper;
 
-    public FinishWorkoutCommand(CommandContainer commandContainer,
-                                WorkoutService workoutService,
-                                WorkoutReportService workoutReportService,
-                                WorkoutSessionService workoutSessionService,
-                                UserAccountService userAccountService,
-                                UserAccountMapper userAccountMapper) {
+    private final CommandContainer commandContainer;
+
+    @PostConstruct
+    public void init() {
         commandContainer.setCommandMap(this);
-        this.workoutService = workoutService;
-        this.workoutReportService = workoutReportService;
-        this.workoutSessionService = workoutSessionService;
-        this.userAccountService = userAccountService;
-        this.userAccountMapper = userAccountMapper;
     }
 
     @Override

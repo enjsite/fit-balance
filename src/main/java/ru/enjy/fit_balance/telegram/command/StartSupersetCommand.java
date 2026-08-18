@@ -18,6 +18,7 @@ import ru.enjy.fit_balance.service.ExerciseService;
 import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
+import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
@@ -39,6 +40,7 @@ public class StartSupersetCommand implements Command {
     private final CommandContainer commandContainer;
     private final UserAccountService userAccountService;
     private final WorkoutSessionService workoutSessionService;
+    private final WorkoutReportService workoutReportService;
 
     @PostConstruct
     public void init() {
@@ -47,6 +49,8 @@ public class StartSupersetCommand implements Command {
 
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
+
+        System.out.println("StartSupersetCommand");
 
         UserAccountDto userAccountDto = userAccountService.findFirstByChatId(chatId.toString());
         WorkoutSession session = workoutSessionService.getRequired(userAccountDto.getId());
@@ -75,6 +79,8 @@ public class StartSupersetCommand implements Command {
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                     new InlineKeyboardRow(button1), new InlineKeyboardRow(button2))
             );
+
+            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));
             updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
                     "Введите название упражения: ");
         } else {

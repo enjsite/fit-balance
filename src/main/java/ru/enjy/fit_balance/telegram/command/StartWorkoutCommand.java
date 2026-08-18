@@ -4,19 +4,18 @@ import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
-import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.entity.WorkoutSession;
 import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
 import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
+import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
@@ -34,8 +33,8 @@ public class StartWorkoutCommand implements Command {
     private final UserAccountService userAccountService;
     private final WorkoutSessionService workoutSessionService;
     private final UserAccountMapper userAccountMapper;
+    private final WorkoutReportService workoutReportService;
 
-    private final WorkoutMapper workoutMapper;
     private final CommandContainer commandContainer;
 
     @PostConstruct
@@ -81,7 +80,9 @@ public class StartWorkoutCommand implements Command {
                         new InlineKeyboardRow(button1),
                         new InlineKeyboardRow(button2)
                 ));
-        updateConsumer.sendMessage(chatId, "Ваша тренировка: " + workout.getTitle());
+
+        // тут должен быть полный лог
+        updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(workout.getId()));
         updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Выберите действие:");
     }
 

@@ -24,6 +24,62 @@ public class WorkoutReportService {
 
     private final WorkoutService workoutService;
 
+    public String getWorkoutLog(Long workoutId) {
+        WorkoutDto workoutDto = workoutService.getOne(workoutId);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("📅 *")
+                .append(escapeMd(workoutDto.getTitle()))
+                .append("*\n\n");
+
+        int ssCounter = 1;
+        //var workoutSets = workoutService.getFilledSetsByWorkout(workoutDto);
+        var workoutSets = workoutDto.getSupersets();
+        if (workoutSets != null) {
+            for (SupersetDto superset : workoutSets) {
+
+                int sCounter = 1;
+                //var approaches = supersetService.getFilledSetsBySuperset(superset);
+                var approaches = superset.getSets();
+                if (approaches != null) {
+                    if (isSupersetSingleExerciseType(superset)) {
+                        sb.append(ssCounter++).append(". 🔁 *Сет ").append("*\n");
+
+                        for (SetDto set : approaches) {
+                            if (sCounter++ == 1) {
+                                //sb.append(ssCounter++)
+                                sb.append("  ")
+                                        .append("• ")
+                                        .append("🏋️ *")
+                                        .append(escapeMd(set.getExercise().getTitle()))
+                                        .append("*\n");
+                            }
+                            sb.append("  - ")
+                                    .append(logFormatSet(set))
+                                    .append("\n");
+                        }
+                    } else {
+                        sb.append(ssCounter++).append(". 🔁 *Суперсет ").append("*\n");
+
+                        for (SetDto set : approaches) {
+                            sb.append("  ")
+                                    .append("• ")
+                                    .append(escapeMd(set.getExercise().getTitle()))
+                                    .append("\n");
+
+                            sb.append("    ")
+                                    .append(logFormatSet(set))
+                                    .append("\n");
+                        }
+                    }
+                    sb.append("\n");
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
     public String getWorkoutReport(Long workoutId) {
         WorkoutDto workoutDto = workoutService.getOne(workoutId);
 
@@ -102,15 +158,29 @@ public class WorkoutReportService {
                 .sum();
     }
 
+    private String logFormatSet(SetDto setDto) {
+        StringBuilder sb = new StringBuilder();
+        var reps = setDto.getReps() != null ? setDto.getReps().toString(): "";
+        var weight = setDto.getWeight() != null ? setDto.getWeight().toString() : "";
+        sb.append("`")
+                .append(weight)
+                .append("кг")
+                .append(" * ")
+                .append(reps)
+                .append("`");
+        return reps.isEmpty() && weight.isEmpty() ? "" : sb.toString();
+    }
+
     private String formatSet(SetDto setDto) {
         StringBuilder sb = new StringBuilder();
         var reps = setDto.getReps() != null ? setDto.getReps().toString(): "0";
         var weight = setDto.getWeight() != null ? setDto.getWeight().toString() : "0";
         sb.append("`")
-                .append(reps)
-                .append("*")
                 .append(weight)
-                .append("кг").append("`");
+                .append("кг")
+                .append(" * ")
+                .append(reps)
+                .append("`");
         return sb.toString();
     }
 

@@ -15,6 +15,7 @@ import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.entity.WorkoutSession;
 import ru.enjy.fit_balance.model.mapper.SupersetMapper;
 import ru.enjy.fit_balance.service.*;
+import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
@@ -33,9 +34,11 @@ public class AddSetCommand implements Command {
     private final SetService setService;
     private final ExerciseService exerciseService;
     private final UserAccountService userAccountService;
-    private final CommandContainer commandContainer;
     private final WorkoutSessionService workoutSessionService;
     private final SupersetMapper supersetMapper;
+    private final WorkoutReportService workoutReportService;
+
+    private final CommandContainer commandContainer;
 
     @PostConstruct
     public void init() {
@@ -48,24 +51,10 @@ public class AddSetCommand implements Command {
                 commandContainer.setCommandMap("/ex" + exercise.getId().toString(), this));
     }
 
-//    public AddSetCommand(CommandContainer commandContainer,
-//                         WorkoutService workoutService,
-//                         SupersetService supersetService,
-//                         SetService setService,
-//                         ExerciseService exerciseService) {
-//        commandContainer.setCommandMap(this);
-//        this.workoutService = workoutService;
-//        this.supersetService = supersetService;
-//        this.setService = setService;
-//
-//        // to do getAll только для этого юзера ?
-//        var exercises = exerciseService.getAll();
-//        exercises.forEach(exercise ->
-//                commandContainer.setCommandMap("/ex" + exercise.getId().toString(), this));
-//    }
-
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
+
+        System.out.println("AddSetCommand");
 
         // получить сессию, воркаут, суперсет и exerciseId - достать из сессии, если не передано.
         UserAccountDto userAccountDto = userAccountService.findFirstByChatId(chatId.toString());
@@ -103,6 +92,8 @@ public class AddSetCommand implements Command {
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                     new InlineKeyboardRow(button1))
             );
+
+            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));
             updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
                     "Введите рабочий вес (число или число с точкой, например: 80.5): ");
 
