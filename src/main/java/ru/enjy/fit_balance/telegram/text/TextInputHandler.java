@@ -109,34 +109,41 @@ public class TextInputHandler {
 
         var activeSuperset = supersetService.getOne(activeSet.getSupersetId());
 
-        if (activeSuperset.getType().equals(SetApproachType.SUPERSET)) {
+//        if (activeSuperset.getType().equals(SetApproachType.SUPERSET)) {
+//
+//            workoutSessionService.updateState(session, SessionState.WAITING_EXERCISE_NAME);
+//            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
+//                    new InlineKeyboardRow(button1), new InlineKeyboardRow(button2))
+//            );
+//            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
+//                    "Введите название упражения: ");
+//
+//        } else {
 
-            workoutSessionService.updateState(session, SessionState.WAITING_EXERCISE_NAME);
-            InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
-                    new InlineKeyboardRow(button1), new InlineKeyboardRow(button2))
-            );
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
-                    "Введите название упражения: ");
-
-        } else {
-
+        // перенесу это непосредственно в команду
             workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT); // или ввод упражнения? когда ожидается ввод упражнения?
             // вместо выбора упражнения достаем exerciseId из activeSet и вызываем команду AddSet с ex{exerciseId}
 
             var button0 = InlineKeyboardButton.builder()
-                    .text("Еще подход")
+                    .text("+ Еще подход")
                     //.callbackData("/ex" + exerciseId)
                     .callbackData(ADD_SET.getCommand())
                     // переходим на add_set без ожидания ввода названия упражнения
                     .build();
 
+            var button4 = InlineKeyboardButton.builder()
+                    .text("+ Добавить упражнение в сет")
+                    .callbackData(ADD_EXERCISE.getCommand())
+                    .build();
+
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                     new InlineKeyboardRow(button0),
+                    new InlineKeyboardRow(button4),
                     new InlineKeyboardRow(button1),
                     new InlineKeyboardRow(button2)));
 
             updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Что дальше?");
-        }
+        //}
     }
 
     private void processWeightInput(UpdateConsumer updateConsumer, String input, Long chatId, UserAccount user, WorkoutSession session) {

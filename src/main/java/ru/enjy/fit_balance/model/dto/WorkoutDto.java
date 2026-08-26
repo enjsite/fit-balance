@@ -5,6 +5,7 @@ import lombok.Value;
 import ru.enjy.fit_balance.model.entity.WorkoutStatus;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -22,5 +23,7 @@ public class WorkoutDto {
     Boolean active;
     WorkoutStatus status;
     LocalDateTime created;
+    OffsetDateTime dateStart;
+    OffsetDateTime dateEnd;
     List<SupersetDto> supersets;
 }

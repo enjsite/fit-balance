@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
+import ru.enjy.fit_balance.model.entity.SessionState;
 import ru.enjy.fit_balance.model.entity.Superset;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.entity.WorkoutSession;
@@ -80,6 +81,8 @@ public class AddSetCommand implements Command {
 
         if (currentSuperset != null) { // здесь надо убедиться, что при завершении суперсета корректно сбросили его в сессии
 
+            workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT);
+
             // убрать дто
             //var supersetDto = supersetMapper.toSupersetDto(currentSuperset);
             var exerciseSet = setService.create(currentSuperset, exerciseId);
@@ -96,6 +99,8 @@ public class AddSetCommand implements Command {
             updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));
             updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
                     "Введите рабочий вес (число или число с точкой, например: 80.5): ");
+
+
 
         } else {
             var button = InlineKeyboardButton.builder()

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd">
+
+    <changeSet id="add-dateStart-dateEnd-to-workout" author="enjsite">
+
+        <addColumn tableName="workout">
+            <column name="date_start" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="workout">
+            <column name="date_end" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+</databaseChangeLog>

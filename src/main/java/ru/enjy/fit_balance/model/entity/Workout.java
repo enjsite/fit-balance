@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -43,6 +44,12 @@ public class Workout {
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
+
+    @Column(name = "date_start")
+    private OffsetDateTime dateStart;
+
+    @Column(name = "date_end")
+    private OffsetDateTime dateEnd;
 
     @OneToMany(mappedBy = "workout", orphanRemoval = true)
     private List<Superset> supersets = new ArrayList<>();
