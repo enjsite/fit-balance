@@ -15,6 +15,8 @@ public interface ExerciseService {
 
     List<ExerciseDto> getAll();
 
+    List<ExerciseDto> getAllByUserId(Long userId);
+
     ExerciseDto getOne(Long id);
 
     List<ExerciseDto> getMany(List<Long> ids);

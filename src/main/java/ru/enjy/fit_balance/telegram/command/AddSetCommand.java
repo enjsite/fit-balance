@@ -22,6 +22,7 @@ import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
 import java.util.List;
 
+import static ru.enjy.fit_balance.telegram.command.CommandName.ADD_EXERCISE;
 import static ru.enjy.fit_balance.telegram.command.CommandName.START_SUPERSET;
 
 @Slf4j
@@ -47,9 +48,9 @@ public class AddSetCommand implements Command {
 
         // точно ли это надо?
         // to do getAll только для этого юзера ?
-        var exercises = exerciseService.getAll();
-        exercises.forEach(exercise ->
-                commandContainer.setCommandMap("/ex" + exercise.getId().toString(), this));
+//        var exercises = exerciseService.getAll();
+//        exercises.forEach(exercise ->
+//                commandContainer.setCommandMap("/ex" + exercise.getId().toString(), this));
     }
 
     @Override
@@ -90,7 +91,7 @@ public class AddSetCommand implements Command {
 
             var button1 = InlineKeyboardButton.builder()
                     .text("Отменить")
-                    .callbackData(START_SUPERSET.getCommand())
+                    .callbackData(ADD_EXERCISE.getCommand()) // этого должно быть достаточно
                     .build();
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                     new InlineKeyboardRow(button1))

@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.entity.SessionState;
-import ru.enjy.fit_balance.model.entity.SetApproachType;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.entity.WorkoutSession;
 import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
@@ -31,12 +30,8 @@ import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 public class AddExerciseCommand implements Command {
 
     private final CommandName command = ADD_EXERCISE;
-    private final WorkoutService workoutService;
-    private final SupersetService supersetService;
-    private final ExerciseService exerciseService;
     private final UserAccountService userAccountService;
     private final WorkoutSessionService workoutSessionService;
-    private final UserAccountMapper userAccountMapper;
     private final CommandContainer commandContainer;
     private final WorkoutReportService workoutReportService;
 
@@ -63,18 +58,16 @@ public class AddExerciseCommand implements Command {
             // ставим статус - ожидание ввода названия упражнения
             // в сессии больше ничего не меняем
             workoutSessionService.updateState(session, SessionState.WAITING_EXERCISE_NAME);
+            //workoutSessionService.clearExercise(session);// что-то сломалось после добавления
+
 
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")
                     .callbackData(FINISH_WORKOUT.getCommand())
                     .build();
 
-            var button1 = InlineKeyboardButton.builder()
-                    .text("Отменить")
-                    .callbackData(START_SUPERSET.getCommand())
-                    .build();
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
-                    new InlineKeyboardRow(button1), new InlineKeyboardRow(button2))
+                    new InlineKeyboardRow(button2))
             );
 
             updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));

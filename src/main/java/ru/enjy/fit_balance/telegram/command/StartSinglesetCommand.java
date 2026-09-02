@@ -1,7 +1,6 @@
 package ru.enjy.fit_balance.telegram.command;
 
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -9,8 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
-import ru.enjy.fit_balance.model.dto.WorkoutDto;
-import ru.enjy.fit_balance.model.entity.SessionState;
 import ru.enjy.fit_balance.model.entity.SetApproachType;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.entity.WorkoutSession;
@@ -23,7 +20,6 @@ import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static ru.enjy.fit_balance.telegram.command.CommandName.*;
@@ -34,12 +30,9 @@ import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 public class StartSinglesetCommand implements Command {
 
     private final CommandName command = START_SINGLESET;
-    private final WorkoutService workoutService;
     private final SupersetService supersetService;
-    private final ExerciseService exerciseService;
     private final UserAccountService userAccountService;
     private final WorkoutSessionService workoutSessionService;
-    private final UserAccountMapper userAccountMapper;
     private final CommandContainer commandContainer;
     private final WorkoutReportService workoutReportService;
 
@@ -75,12 +68,12 @@ public class StartSinglesetCommand implements Command {
                     .callbackData(FINISH_WORKOUT.getCommand())
                     .build();
 
-            var button1 = InlineKeyboardButton.builder()
-                    .text("Отменить")
-                    .callbackData(START_SUPERSET.getCommand())
-                    .build();
+//            var button1 = InlineKeyboardButton.builder()
+//                    .text("Отменить")
+//                    .callbackData(START_SUPERSET.getCommand())
+//                    .build();
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
-                    new InlineKeyboardRow(button1), new InlineKeyboardRow(button2))
+                    new InlineKeyboardRow(button2))
             );
 
             updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));

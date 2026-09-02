@@ -120,6 +120,12 @@ public class WorkoutSessionService {
         sessionRepository.save(session);
     }
 
+    @Transactional
+    public void clearExercise(WorkoutSession session) {
+        session.setCurrentExercise(null);
+        sessionRepository.save(session);
+    }
+
     /**
      * Привязать текущий superset
      */
