@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
-import ru.enjy.fit_balance.model.entity.SetApproachType;
+import ru.enjy.fit_balance.model.entity.SessionState;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.entity.WorkoutSession;
 import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
@@ -27,10 +27,9 @@ import static ru.enjy.fit_balance.telegram.command.CommandName.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StartSinglesetCommand implements Command {
+public class AddExerciseCommand implements Command {
 
-    private final CommandName command = START_SINGLESET;
-    private final SupersetService supersetService;
+    private final CommandName command = ADD_EXERCISE;
     private final UserAccountService userAccountService;
     private final WorkoutSessionService workoutSessionService;
     private final CommandContainer commandContainer;
@@ -44,7 +43,7 @@ public class StartSinglesetCommand implements Command {
     @Override
     public void execute(UpdateConsumer updateConsumer, Long chatId, Long exerciseId) {
 
-        System.out.println("StartSinglesetCommand");
+        System.out.println("AddExerciseCommand");
 
         //получить пользователя и его сессию и проверить hasInProgressWorkoutContext
         //и если нет - отправить на начать тренировку
@@ -53,15 +52,14 @@ public class StartSinglesetCommand implements Command {
         WorkoutSession session = workoutSessionService.getRequired(userAccountDto.getId());
         Workout currentWorkout = session.getCurrentWorkout();
 
-        //WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
-
+        // почему эта проверка? подумать, какие возможны фэйлы и что тут проверять - наличие сессии?
         if (currentWorkout != null) {
-            //!!!
-            // Добавить проверку - если активный суперсет уже существует, возможно мы зашли сюда, чтобы выбрать другое упражнение
-            var currentSuperset = supersetService.create(currentWorkout, SetApproachType.SET);
 
-            workoutSessionService.attachSuperset(session, currentSuperset);
-            System.out.println("in StartSinglesetCommand добавила суперсет и ставлю ожидание ввода названия упражнения хотя он и так может уже стоять " + session.getState());
+            // ставим статус - ожидание ввода названия упражнения
+            // в сессии больше ничего не меняем
+            workoutSessionService.updateState(session, SessionState.WAITING_EXERCISE_NAME);
+            //workoutSessionService.clearExercise(session);// что-то сломалось после добавления
+
 
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")

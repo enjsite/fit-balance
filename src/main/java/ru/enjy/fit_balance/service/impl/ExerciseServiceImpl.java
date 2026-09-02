@@ -51,6 +51,15 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
+    public List<ExerciseDto> getAllByUserId(Long userId) {
+        List<Exercise> exercises = exerciseRepository.findAllByUser_Id(userId);
+        if (exercises == null) {
+            return List.of();
+        }
+        return exercises.stream().map(exerciseMapper::toExerciseDto).toList();
+    }
+
+    @Override
     public ExerciseDto getOne(Long id) {
         Optional<Exercise> exerciseOptional = exerciseRepository.findById(id);
         return exerciseMapper.toExerciseDto(exerciseOptional.orElseThrow(() ->

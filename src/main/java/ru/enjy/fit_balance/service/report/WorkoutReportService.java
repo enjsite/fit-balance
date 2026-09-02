@@ -10,9 +10,13 @@ import ru.enjy.fit_balance.model.dto.SupersetDto;
 import ru.enjy.fit_balance.model.dto.WorkoutDto;
 import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.WorkoutService;
+import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,6 +27,7 @@ public class WorkoutReportService {
     private final SupersetService supersetService;
 
     private final WorkoutService workoutService;
+    private final WorkoutSessionService workoutSessionService; //  потом доработать, чтобы получить id текущего упражнения
 
     public String getWorkoutLog(Long workoutId) {
         WorkoutDto workoutDto = workoutService.getOne(workoutId);
@@ -31,6 +36,13 @@ public class WorkoutReportService {
         sb.append("📅 *")
                 .append(escapeMd(workoutDto.getTitle()))
                 .append("*\n\n");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        OffsetDateTime dateStart = workoutDto.getDateStart();
+        if (dateStart != null) {
+            String time = dateStart.format(formatter);
+            sb.append("*Начало: ").append(time).append("*\n\n");
+        }
 
         int ssCounter = 1;
         //var workoutSets = workoutService.getFilledSetsByWorkout(workoutDto);
@@ -88,6 +100,13 @@ public class WorkoutReportService {
                 .append(escapeMd(workoutDto.getTitle()))
                 .append("*\n\n");
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        OffsetDateTime dateStart = workoutDto.getDateStart();
+        if (dateStart != null) {
+            String time = dateStart.format(formatter);
+            sb.append("*Начало: ").append(time).append("*\n\n");
+        }
+
         int ssCounter = 1;
         var workoutSets = workoutService.getFilledSetsByWorkout(workoutDto);
         if (workoutSets != null) {
@@ -126,6 +145,12 @@ public class WorkoutReportService {
                     sb.append("\n");
                 }
             }
+        }
+
+        OffsetDateTime dateEnd = workoutDto.getDateEnd();
+        if (dateEnd != null) {
+            String time = dateEnd.format(formatter);
+            sb.append("*Конец: ").append(time).append("*\n\n");
         }
 
         sb.append("✅ *Итоги:*\n")
@@ -185,8 +210,13 @@ public class WorkoutReportService {
     }
 
     private boolean isSupersetSingleExerciseType(SupersetDto supersetDto) {
-        var sets = supersetDto.getSets();
-        if (sets == null || sets.isEmpty()) {
+        if (supersetDto.getSets() == null) {
+            return true;
+        }
+        var sets = supersetDto.getSets();//.stream().filter(setDto -> setDto.getReps() != 0).toList();
+        //var sets = supersetService.getFilledSetsBySuperset(supersetDto); // тут уже учитываются только не с 0 повторов
+
+        if (sets.isEmpty()) {
             return true;
         }
 

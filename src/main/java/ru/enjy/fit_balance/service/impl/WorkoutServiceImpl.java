@@ -25,6 +25,7 @@ import ru.enjy.fit_balance.service.WorkoutService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
@@ -67,13 +68,13 @@ public class WorkoutServiceImpl implements WorkoutService {
         closeAllUserActiveWorkout(dto.getUser().getId()); // завершаем все активные тренировки
         Workout workout = workoutMapper.toEntity(dto);
         if (workout.getTitle() == null) {
-            workout.setTitle("Workout " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+            workout.setTitle("Тренировка " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
         }
         workout.setCreated(LocalDateTime.now());
+        workout.setDateStart(OffsetDateTime.now());
         workout.setStatus(WorkoutStatus.IN_PROGRESS);
         workout.setActive(true);
-        Workout resultWorkout = workoutRepository.save(workout);
-        return resultWorkout;
+        return workoutRepository.save(workout);
     }
 
     //to delete
@@ -156,6 +157,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     public WorkoutDto finishWorkout(WorkoutDto workoutDto) {
         var activeWorkout = workoutMapper.toEntity(workoutDto);
         activeWorkout.setActive(false);
+        activeWorkout.setDateEnd(OffsetDateTime.now());
         activeWorkout.setStatus(WorkoutStatus.COMPLETED);
         workoutRepository.save(activeWorkout);
         return workoutMapper.toWorkoutDto(activeWorkout);

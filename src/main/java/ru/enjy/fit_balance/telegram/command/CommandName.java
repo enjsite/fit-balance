@@ -12,6 +12,8 @@ public enum CommandName {
     START_SINGLESET("/start_singleset"),
     FINISH_SUPERSET("/finish_superset"),
     ADD_SET("/add_set"),
+    ADD_EXERCISE("/add_exercise"),
+    ADD_WEIGHT("/add_weight"),
     HELP("/help");
 
     private final String command;
