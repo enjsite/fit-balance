@@ -67,7 +67,7 @@ public class TextInputHandler {
 
         Exercise exercise;
         // to do искать с учетом user id
-        Optional<Exercise> existing = exerciseRepository.findFirstByTitleIgnoreCase(message);
+        Optional<Exercise> existing = exerciseRepository.findFirstByTitleIgnoreCaseAndUserId(message, user.getId());
 
         exercise = existing.orElseGet(() -> exerciseService.create(message, user));
         System.out.println("processExerciseInput ввели название упражнения и устанавливаем WAITING_WEIGHT");
