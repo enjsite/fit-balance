@@ -68,10 +68,6 @@ public class StartSinglesetCommand implements Command {
                     .callbackData(FINISH_WORKOUT.getCommand())
                     .build();
 
-//            var button1 = InlineKeyboardButton.builder()
-//                    .text("Отменить")
-//                    .callbackData(START_SUPERSET.getCommand())
-//                    .build();
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                     new InlineKeyboardRow(button2))
             );

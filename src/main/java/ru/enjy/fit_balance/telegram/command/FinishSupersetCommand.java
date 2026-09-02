@@ -48,10 +48,6 @@ public class FinishSupersetCommand implements Command {
                     .text("Начать сет")
                     .callbackData(START_SINGLESET.getCommand())
                     .build();
-            var button1 = InlineKeyboardButton.builder()
-                    .text("Начать суперсет")
-                    .callbackData(START_SUPERSET.getCommand())
-                    .build();
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")
                     .callbackData(FINISH_WORKOUT.getCommand())
@@ -59,7 +55,6 @@ public class FinishSupersetCommand implements Command {
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
                     List.of(
                             new InlineKeyboardRow(button0),
-                            new InlineKeyboardRow(button1),
                             new InlineKeyboardRow(button2)
                     ));
             updateConsumer.sendMessage(chatId, "Ваша тренировка: " + activeWorkout.getTitle());

@@ -161,7 +161,7 @@ public class TextInputHandler {
 
         var button1 = InlineKeyboardButton.builder()
                 .text("Отменить")
-                .callbackData(START_SUPERSET.getCommand())
+                .callbackData(ADD_WEIGHT.getCommand()) // Новая команда ADD_WEIGHT
                 .build();
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(List.of(
                 new InlineKeyboardRow(button1))
