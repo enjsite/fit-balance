@@ -36,6 +36,9 @@ public class WorkoutSession {
     @Column(name = "state", nullable = false, length = 50)
     private SessionState state;
 
+    @Column(name = "message_id")
+    private Integer messageId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_workout_id")
     private Workout currentWorkout;

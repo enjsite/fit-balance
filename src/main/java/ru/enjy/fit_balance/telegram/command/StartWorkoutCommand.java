@@ -12,7 +12,6 @@ import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.entity.WorkoutSession;
 import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
-import ru.enjy.fit_balance.model.mapper.WorkoutMapper;
 import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
 import ru.enjy.fit_balance.service.report.WorkoutReportService;
@@ -76,9 +75,9 @@ public class StartWorkoutCommand implements Command {
                         new InlineKeyboardRow(button2)
                 ));
 
-        // тут должен быть полный лог
-        updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(workout.getId()));
-        updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Выберите действие:");
+        var message = updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
+                workoutReportService.getWorkoutLog(workout.getId()) + "\n\nВыберите действие:");
+        workoutSessionService.attachMessageId(session, message.getMessageId());
     }
 
     @Override

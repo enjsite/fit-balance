@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -125,7 +126,7 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     }
 
     @SneakyThrows
-    public void sendMessageWithInlineKeyboard(Long chatId, InlineKeyboardMarkup markup, String message) {
+    public Message sendMessageWithInlineKeyboard(Long chatId, InlineKeyboardMarkup markup, String message) {
 
         SendMessage sendMessage = SendMessage.builder()
                 .text(message)
@@ -133,7 +134,7 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
                 .build();
 
         sendMessage.setReplyMarkup(markup);
-        telegramClient.execute(sendMessage);
+        return telegramClient.execute(sendMessage);
     }
 
     @SneakyThrows

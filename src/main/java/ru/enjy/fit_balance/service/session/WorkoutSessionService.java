@@ -136,11 +136,18 @@ public class WorkoutSessionService {
         sessionRepository.save(session);
     }
 
+    @Transactional
+    public void attachMessageId(WorkoutSession session, Integer messageId) {
+        session.setMessageId(messageId);
+        sessionRepository.save(session);
+    }
+
     /**
      * Полностью очистить session (при завершении тренировки)
      */
     @Transactional
     public void clearSession(WorkoutSession session) {
+        session.setMessageId(null);
         session.setCurrentWorkout(null);
         session.setCurrentSuperset(null);
         session.setCurrentExercise(null);
