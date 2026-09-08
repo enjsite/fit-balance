@@ -8,6 +8,7 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -67,7 +68,8 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
             if (message.startsWith("/ex")) {
                 try {
                     exerciseId = Long.parseLong(message.replace("/ex", ""));
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) {
+                }
             }
 
             var command = getCommand(message);
@@ -119,7 +121,7 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
         );
 
         ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup(keyboardRows);
-       // markup.setResizeKeyboard(true);
+        // markup.setResizeKeyboard(true);
         //sendMessage.setReplyMarkup(markup);
 
         telegramClient.execute(sendMessage);
@@ -135,6 +137,24 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
 
         sendMessage.setReplyMarkup(markup);
         return telegramClient.execute(sendMessage);
+    }
+
+    @SneakyThrows
+    public void updateWorkoutMessage(Long chatId, Integer messageId, InlineKeyboardMarkup markup, String message) {
+        if (messageId == null) {
+            sendMessageWithInlineKeyboard(chatId, markup, message);
+            return;
+        }
+
+        EditMessageText editMessage = EditMessageText.builder()
+                .text(message)
+                .chatId(chatId.toString())
+                .messageId(messageId)
+                .parseMode(org.telegram.telegrambots.meta.api.methods.ParseMode.MARKDOWN)
+                .build();
+
+        editMessage.setReplyMarkup(markup);
+        telegramClient.execute(editMessage);
     }
 
     @SneakyThrows

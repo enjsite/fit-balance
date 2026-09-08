@@ -9,19 +9,15 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.enjy.fit_balance.model.dto.SetDto;
 import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.entity.*;
-import ru.enjy.fit_balance.model.mapper.SetMapper;
 import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
 import ru.enjy.fit_balance.repository.ExerciseRepository;
 import ru.enjy.fit_balance.service.*;
 import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.service.session.WorkoutSessionService;
-import ru.enjy.fit_balance.service.state.WorkoutInputState;
-import ru.enjy.fit_balance.service.state.WorkoutStateService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
 import ru.enjy.fit_balance.telegram.command.Command;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,9 +31,6 @@ public class TextInputHandler {
 
     private final CommandContainer commandContainer;
 
-    private final SetMapper setMapper;
-    private final WorkoutStateService stateService;
-    private final WorkoutService workoutService;
     private final ExerciseService exerciseService;
     private final SupersetService supersetService;
     private final SetService setService;
@@ -126,9 +119,7 @@ public class TextInputHandler {
 
             var button0 = InlineKeyboardButton.builder()
                     .text("+ Еще подход")
-                    //.callbackData("/ex" + exerciseId)
                     .callbackData(ADD_SET.getCommand())
-                    // переходим на add_set без ожидания ввода названия упражнения
                     .build();
 
             var button4 = InlineKeyboardButton.builder()

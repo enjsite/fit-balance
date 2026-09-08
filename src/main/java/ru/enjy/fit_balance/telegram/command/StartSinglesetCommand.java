@@ -11,11 +11,8 @@ import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.entity.SetApproachType;
 import ru.enjy.fit_balance.model.entity.Workout;
 import ru.enjy.fit_balance.model.entity.WorkoutSession;
-import ru.enjy.fit_balance.model.mapper.UserAccountMapper;
-import ru.enjy.fit_balance.service.ExerciseService;
 import ru.enjy.fit_balance.service.SupersetService;
 import ru.enjy.fit_balance.service.UserAccountService;
-import ru.enjy.fit_balance.service.WorkoutService;
 import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
@@ -53,15 +50,10 @@ public class StartSinglesetCommand implements Command {
         WorkoutSession session = workoutSessionService.getRequired(userAccountDto.getId());
         Workout currentWorkout = session.getCurrentWorkout();
 
-        //WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
-
         if (currentWorkout != null) {
-            //!!!
-            // Добавить проверку - если активный суперсет уже существует, возможно мы зашли сюда, чтобы выбрать другое упражнение
             var currentSuperset = supersetService.create(currentWorkout, SetApproachType.SET);
 
             workoutSessionService.attachSuperset(session, currentSuperset);
-            System.out.println("in StartSinglesetCommand добавила суперсет и ставлю ожидание ввода названия упражнения хотя он и так может уже стоять " + session.getState());
 
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")
@@ -72,9 +64,8 @@ public class StartSinglesetCommand implements Command {
                     new InlineKeyboardRow(button2))
             );
 
-            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
-                    "Введите название упражения: ");
+            updateConsumer.updateWorkoutMessage(chatId, session.getMessageId(), markup,
+                    workoutReportService.getWorkoutLog(currentWorkout.getId()) + "\n\nВведите название упражнения: ");
 
 
         } else {
