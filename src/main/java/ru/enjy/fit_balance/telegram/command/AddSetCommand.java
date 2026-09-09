@@ -44,7 +44,6 @@ public class AddSetCommand implements Command {
 
         System.out.println("AddSetCommand");
 
-        // получить сессию, воркаут, суперсет и exerciseId - достать из сессии, если не передано.
         UserAccountDto userAccountDto = userAccountService.findFirstByChatId(chatId.toString());
         WorkoutSession session = workoutSessionService.getRequired(userAccountDto.getId());
         Workout currentWorkout = session.getCurrentWorkout();
@@ -52,14 +51,10 @@ public class AddSetCommand implements Command {
         if (exerciseId == null) {
             System.out.println("exercise не передан ");
             exerciseId = session.getCurrentExercise().getId();
-            // должно ли быть создание подхода командой, если каждый раз оно вызывается напрямую через execute
         }
 
-        //WorkoutDto activeWorkout = workoutService.findFirstByActiveTrueAndUserChatId(chatId.toString());
         Superset currentSuperset = null;
         if (currentWorkout != null) {
-            // суперсет будет тот же и мы должны достать его из сессии
-            //currentSuperset = supersetService.findFirstByActiveAndWorkout(currentWorkout);
             currentSuperset = session.getCurrentSuperset();
         } else {
             // предложить начать workout
@@ -70,10 +65,7 @@ public class AddSetCommand implements Command {
 
             workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT);
 
-            // убрать дто
-            //var supersetDto = supersetMapper.toSupersetDto(currentSuperset);
             var exerciseSet = setService.create(currentSuperset, exerciseId);
-            System.out.println("какой статус у сессии? " + session.getState());
 
             var button1 = InlineKeyboardButton.builder()
                     .text("Отменить")
@@ -83,11 +75,12 @@ public class AddSetCommand implements Command {
                     new InlineKeyboardRow(button1))
             );
 
-            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
-                    "Введите рабочий вес (число или число с точкой, например: 80.5): ");
+            //updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));
+            //updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
+              //      "Введите рабочий вес (число или число с точкой, например: 80.5): ");
 
-
+            updateConsumer.updateWorkoutMessage(chatId, session.getMessageId(), markup,
+                    workoutReportService.getWorkoutLog(currentWorkout.getId()) + "\n\nВведите рабочий вес (число или число с точкой, например: 80.5): ");
 
         } else {
             var button = InlineKeyboardButton.builder()

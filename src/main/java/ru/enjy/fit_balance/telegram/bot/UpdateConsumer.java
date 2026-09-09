@@ -8,6 +8,7 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -19,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.enjy.fit_balance.telegram.command.Command;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
@@ -58,10 +60,11 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
         if (chatId == null) return;
 
         String query = getQuery(update);
-        handleQuery(chatId, query);
+        Integer messageId = getMessageId(update);
+        handleQuery(chatId, query, messageId);
     }
 
-    private void handleQuery(Long chatId, String message) {
+    private void handleQuery(Long chatId, String message, Integer messageId) {
         //команда
         if (message.startsWith("/")) {
             Long exerciseId = null;
@@ -80,7 +83,7 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
                 sendMessage(chatId, "Неизвестная команда");
             }
         } else { // текстовый ввод
-            textInputHandler.handle(this, chatId, message);
+            textInputHandler.handle(this, chatId, message, messageId);
         }
 
     }
@@ -88,6 +91,11 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     private Long getChatId(Update update) {
         return update.hasCallbackQuery() ?
                 update.getCallbackQuery().getFrom().getId() : update.hasMessage() ? update.getMessage().getChatId() : null;
+    }
+
+    private Integer getMessageId(Update update) {
+        return update.hasCallbackQuery() ?
+                update.getCallbackQuery().getMessage().getMessageId() : update.hasMessage() ? update.getMessage().getMessageId() : null;
     }
 
     private String getQuery(Update update) {
@@ -101,6 +109,7 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     }
 
     private String getMessage(Update update) {
+        update.getMessage().getMessageId();
         return update.hasMessage() ?
                 update.getMessage().getText() : null;
     }
@@ -286,5 +295,20 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
         telegramClient.execute(message);
     }
 
-
+    @SneakyThrows
+    public void deleteUserMessage(String chatId, Integer messageId) {
+        DeleteMessage deleteMessage = DeleteMessage.builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .build();
+        telegramClient.execute(deleteMessage);
+        // подумать над обработкой ошибок вместо SneakyThrows
+//        try {
+//            telegramClient.execute(deleteMessage);
+//            // Удаление прошло успешно (в личном чате это почти всегда так)
+//        } catch (TelegramApiException e) {
+//            // Логируй ошибку. Возможно, сообщение уже было удалено или прошло больше 48 часов
+//            log.warn("Не удалось удалить сообщение {} в чате {}: {}", messageId, chatId, e.getMessage());
+//        }
+    }
 }
