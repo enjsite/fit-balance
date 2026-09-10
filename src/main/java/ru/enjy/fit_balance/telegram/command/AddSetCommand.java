@@ -75,12 +75,9 @@ public class AddSetCommand implements Command {
                     new InlineKeyboardRow(button1))
             );
 
-            //updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));
-            //updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
-              //      "Введите рабочий вес (число или число с точкой, например: 80.5): ");
-
             updateConsumer.updateWorkoutMessage(chatId, session.getMessageId(), markup,
-                    workoutReportService.getWorkoutLog(currentWorkout.getId()) + "\n\nВведите рабочий вес (число или число с точкой, например: 80.5): ");
+                    workoutReportService.getWorkoutLog(currentWorkout.getId())
+                            + "\n\nВведите рабочий вес (число или число с точкой, например: 80.5): ");
 
         } else {
             var button = InlineKeyboardButton.builder()

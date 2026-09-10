@@ -76,7 +76,7 @@ public class StartWorkoutCommand implements Command {
                 ));
 
         var message = updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
-                workoutReportService.getWorkoutLog(workout.getId()) + "\n\nВыберите действие:");
+                workoutReportService.getWorkoutLog(workout.getId()) + "\n\nВыберите действие: ");
 
         workoutSessionService.attachMessageId(session, message.getMessageId());
     }

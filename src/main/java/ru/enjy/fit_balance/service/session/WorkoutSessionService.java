@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.enjy.fit_balance.model.dto.UserAccountDto;
 import ru.enjy.fit_balance.model.entity.*;
-import ru.enjy.fit_balance.repository.UserAccountRepository;
 import ru.enjy.fit_balance.repository.WorkoutRepository;
 import ru.enjy.fit_balance.repository.WorkoutSessionRepository;
-import ru.enjy.fit_balance.service.UserAccountService;
 import ru.enjy.fit_balance.service.WorkoutService;
 
 import java.util.Optional;
@@ -23,10 +20,6 @@ public class WorkoutSessionService {
 
     private final WorkoutRepository workoutRepository;
 
-    private final UserAccountService userAccountService;
-
-    private final UserAccountRepository userAccountRepository;
-
     private final WorkoutService workoutService;
 
     /**
@@ -35,7 +28,6 @@ public class WorkoutSessionService {
      */
     @Transactional
     public WorkoutSession getOrCreate(Long userId, UserAccount user) {
-
         return sessionRepository.findByUserId(userId)
                 .orElseGet(() -> createNew(user));
     }
@@ -123,6 +115,12 @@ public class WorkoutSessionService {
     @Transactional
     public void clearExercise(WorkoutSession session) {
         session.setCurrentExercise(null);
+        sessionRepository.save(session);
+    }
+
+    @Transactional
+    public void clearSuperset(WorkoutSession session) {
+        session.setCurrentSuperset(null);
         sessionRepository.save(session);
     }
 

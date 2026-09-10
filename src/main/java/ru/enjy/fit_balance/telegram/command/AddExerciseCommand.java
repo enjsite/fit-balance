@@ -58,8 +58,7 @@ public class AddExerciseCommand implements Command {
             // ставим статус - ожидание ввода названия упражнения
             // в сессии больше ничего не меняем
             workoutSessionService.updateState(session, SessionState.WAITING_EXERCISE_NAME);
-            //workoutSessionService.clearExercise(session);// что-то сломалось после добавления
-
+            workoutSessionService.clearExercise(session);// что-то сломалось после добавления
 
             var button2 = InlineKeyboardButton.builder()
                     .text("Закончить тренировку")
@@ -70,10 +69,8 @@ public class AddExerciseCommand implements Command {
                     new InlineKeyboardRow(button2))
             );
 
-            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(currentWorkout.getId()));
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup,
-                    "Введите название упражения: ");
-
+            updateConsumer.updateWorkoutMessage(chatId, session.getMessageId(), markup,
+                    workoutReportService.getWorkoutLog(currentWorkout.getId()) + "\n\nВведите название упражнения: ");
 
         } else {
             var button = InlineKeyboardButton.builder()

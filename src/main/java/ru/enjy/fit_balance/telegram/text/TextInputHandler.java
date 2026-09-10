@@ -15,7 +15,6 @@ import ru.enjy.fit_balance.service.*;
 import ru.enjy.fit_balance.service.report.WorkoutReportService;
 import ru.enjy.fit_balance.service.session.WorkoutSessionService;
 import ru.enjy.fit_balance.telegram.bot.UpdateConsumer;
-import ru.enjy.fit_balance.telegram.command.Command;
 import ru.enjy.fit_balance.telegram.command.CommandContainer;
 
 import java.util.List;
@@ -33,12 +32,12 @@ public class TextInputHandler {
 
     private final ExerciseService exerciseService;
     private final SetService setService;
-
     private final UserAccountService userAccountService;
     private final WorkoutSessionService workoutSessionService;
+    private final WorkoutReportService workoutReportService;
+
     private final UserAccountMapper userAccountMapper;
     private final ExerciseRepository exerciseRepository;
-    private final WorkoutReportService workoutReportService;
 
     public void handle(UpdateConsumer updateConsumer, Long chatId, String message, Integer messageId) {
 
@@ -49,7 +48,7 @@ public class TextInputHandler {
         log.info(session.getState().toString());
         switch (session.getState()) {
             case WAITING_EXERCISE_NAME -> processExerciseInput(updateConsumer, message, userAccount, session, messageId);
-            case WAITING_REPS -> processRepsInput(updateConsumer, message, chatId, userAccount, session);
+            case WAITING_REPS -> processRepsInput(updateConsumer, message, chatId, userAccount, session, messageId);
             case WAITING_WEIGHT -> processWeightInput(updateConsumer, message, chatId, session, messageId);
             default -> updateConsumer.sendMessage(chatId, "Неожиданный ввод: " + message);
         }
@@ -70,7 +69,12 @@ public class TextInputHandler {
         command.execute(updateConsumer, Long.parseLong(user.getChatId()), exercise.getId());
     }
 
-    private void processRepsInput(UpdateConsumer updateConsumer, String input, Long chatId, UserAccount user, WorkoutSession session) {
+    private void processRepsInput(UpdateConsumer updateConsumer,
+                                  String input,
+                                  Long chatId,
+                                  UserAccount user,
+                                  WorkoutSession session,
+                                  Integer messageId) {
 
         SetDto activeSet = setService.findFirstByActiveAndChatId(chatId.toString());
         try {
@@ -80,6 +84,9 @@ public class TextInputHandler {
 
             // перенесу это непосредственно в команду
             workoutSessionService.updateState(session, SessionState.WAITING_WEIGHT); // или ввод упражнения? когда ожидается ввод упражнения?
+
+            // удаление пользовательского ввода после сохранения данных
+            updateConsumer.deleteUserMessage(user.getChatId(), messageId);
 
             var button1 = InlineKeyboardButton.builder()
                     .text("Закончить сет")
@@ -104,12 +111,13 @@ public class TextInputHandler {
                     new InlineKeyboardRow(button1),
                     new InlineKeyboardRow(button2)));
 
-            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(session.getCurrentWorkout().getId()));
-            updateConsumer.sendMessage(chatId, "Сохранил " + reps + " повторов ✅");
-
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Что дальше?");
+            updateConsumer.updateWorkoutMessage(chatId, session.getMessageId(), markup,
+                    workoutReportService.getWorkoutLog(session.getCurrentWorkout().getId())
+                            + "\n\nГотово: " + reps + " повторов ✅"
+                            + "\nЧто дальше?");
 
         } catch (NumberFormatException e) {
+            // как обработать ошибку ввода веса, не сломав концепцию одного сообщения?
             updateConsumer.sendMessage(chatId, "Введите число повторов, например: 12");
         }
     }
@@ -121,6 +129,12 @@ public class TextInputHandler {
             double weight = Double.parseDouble(input);
             setService.saveWeight(activeSet, weight);
 
+            System.out.println("processWeightInput ввели вес и устанавливаем WAITING_REPS");
+            workoutSessionService.updateState(session, SessionState.WAITING_REPS);
+
+            // удаление пользовательского ввода после сохранения данных
+            updateConsumer.deleteUserMessage(chatId.toString(), messageId);
+
             var button1 = InlineKeyboardButton.builder()
                     .text("Отменить")
                     .callbackData(ADD_WEIGHT.getCommand()) // Новая команда ADD_WEIGHT
@@ -129,14 +143,14 @@ public class TextInputHandler {
                     new InlineKeyboardRow(button1))
             );
 
-            System.out.println("processWeightInput ввели вес и устанавливаем WAITING_REPS");
-            workoutSessionService.updateState(session, SessionState.WAITING_REPS);
+            updateConsumer.updateWorkoutMessage(chatId, session.getMessageId(), markup,
+                    workoutReportService.getWorkoutLog(session.getCurrentWorkout().getId())
+                            + "\n\nВес сохранен: " + weight + " кг ✅"
+                            + "\nВведите число повторов (например, 12): ");
 
-            updateConsumer.sendMessage(chatId, workoutReportService.getWorkoutLog(session.getCurrentWorkout().getId()));
-            updateConsumer.sendMessage(chatId, "Сохранил " + weight + " кг ✅");
-            updateConsumer.sendMessageWithInlineKeyboard(chatId, markup, "Введите число повторов, например: 12");
 
         } catch (NumberFormatException e) {
+            // тут, если что-то пошло не так - надо вернуть предыдущее состояние?
             updateConsumer.sendMessage(chatId, "Введите рабочий вес (число или число с точкой, например: 80.5): ");
         }
     }

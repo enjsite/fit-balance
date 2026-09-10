@@ -142,6 +142,7 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
         SendMessage sendMessage = SendMessage.builder()
                 .text(message)
                 .chatId(chatId)
+                .parseMode(org.telegram.telegrambots.meta.api.methods.ParseMode.MARKDOWN)
                 .build();
 
         sendMessage.setReplyMarkup(markup);

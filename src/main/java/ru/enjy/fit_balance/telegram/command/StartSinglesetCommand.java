@@ -52,7 +52,6 @@ public class StartSinglesetCommand implements Command {
 
         if (currentWorkout != null) {
             var currentSuperset = supersetService.create(currentWorkout, SetApproachType.SET);
-
             workoutSessionService.attachSuperset(session, currentSuperset);
 
             var button2 = InlineKeyboardButton.builder()
@@ -66,7 +65,6 @@ public class StartSinglesetCommand implements Command {
 
             updateConsumer.updateWorkoutMessage(chatId, session.getMessageId(), markup,
                     workoutReportService.getWorkoutLog(currentWorkout.getId()) + "\n\nВведите название упражнения: ");
-
 
         } else {
             var button = InlineKeyboardButton.builder()

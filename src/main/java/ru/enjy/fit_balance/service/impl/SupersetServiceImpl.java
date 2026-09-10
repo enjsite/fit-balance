@@ -146,11 +146,12 @@ public class SupersetServiceImpl implements SupersetService {
     }
 
     @Override
-    public SupersetDto finishSuperset(SupersetDto dto) {
-        var superset = supersetMapper.toEntity(dto);
+    @Transactional
+    public Superset finishSuperset(Long supersetId) {
+        var superset = supersetRepository.findById(supersetId).orElseThrow();
         superset.setActive(false);
         supersetRepository.save(superset);
-        return supersetMapper.toSupersetDto(superset);
+        return superset;
     }
 
     @Override
